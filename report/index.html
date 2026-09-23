@@ -1,0 +1,1969 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iNOPS Dashboard — Wireframes</title>
+<style>
+:root{
+  /* ---- Amazon iNOPS brand ---- */
+  --az-ink:#232F3E; --az-ink-deep:#131A22; --az-orange:#FF9900; --az-orange-600:#E47911;
+  --az-blue:#146EB4; --az-blue-700:#0F5288;
+
+  --gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-300:#D1D5DB;--gray-400:#9CA3AF;
+  --gray-500:#6B7280;--gray-600:#4B5563;--gray-700:#374151;--gray-800:#1F2937;--gray-900:#111827;
+
+  --blue-50:#EDF4FB;--blue-100:#D6E7F6;--blue-200:#B4D2EE;
+  --orange-50:#FFF8EC;--orange-100:#FDEBCE;
+
+  /* Categorical data hues — validated (lightness band, chroma floor,
+     CVD separation, normal-vision floor, contrast). Assigned in fixed
+     order, never cycled. Amazon orange #FF9900 is BRAND ONLY — it fails
+     the contrast and lightness checks as a data hue. */
+  --c1:#146EB4; --c2:#C7511F; --c3:#067D62; --c4:#8C4799; --c5:#946200;
+
+  /* Status — reserved, never reused as a series colour. */
+  --ok:#1E7B34; --ok-bg:#E8F4EA; --warn:#B45309; --warn-bg:#FEF3C7;
+  --bad:#B42318; --bad-bg:#FEE4E2; --none:#6B7280; --none-bg:#F3F4F6;
+
+  /* Sequential ramp (single hue, light→dark) for choropleth + heat cells. */
+  --s1:#EDF4FB;--s2:#D6E7F6;--s3:#A9CCEA;--s4:#6FA8D6;--s5:#3B82BF;--s6:#1D5F9C;--s7:#0C3D6B;
+
+  --shadow-1:0 1px 3px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.06);
+  --shadow-2:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+  --shadow-3:0 12px 24px rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.06);
+  --font-sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  --ease-out:cubic-bezier(0,0,.2,1);
+  --sidebar:208px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--gray-50);color:var(--gray-900);font-size:13px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit}
+a{color:var(--az-blue)}
+
+/* ===== topbar ===== */
+.gd-topbar{display:flex;align-items:center;gap:14px;height:46px;padding:0 18px;background:var(--az-ink);color:#fff;position:sticky;top:0;z-index:60}
+.gd-back{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#AAB7B8;text-decoration:none;padding:5px 9px;border-radius:6px}
+.gd-back:hover{background:rgba(255,255,255,.08);color:#fff}
+.gd-wordmark{font-size:17px;font-weight:700;letter-spacing:-.5px;padding-left:14px;border-left:1px solid #3B4859}
+.gd-wordmark .smile{color:var(--az-orange)}
+.gd-topbar-title{font-size:12.5px;color:#D5DBDB}
+.gd-topbar-spacer{flex:1}
+.gd-topbar-meta{display:flex;align-items:center;gap:12px;font-size:11.5px;color:#AAB7B8}
+.gd-refresh{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid #3B4859;color:#D5DBDB;font-size:11.5px;padding:5px 10px;border-radius:6px;cursor:pointer}
+.gd-refresh:hover{background:rgba(255,255,255,.16);color:#fff}
+.gd-refresh svg{transition:transform .5s var(--ease-out)}
+.gd-refresh.spin svg{transform:rotate(360deg)}
+.gd-topbar-user{padding-left:12px;border-left:1px solid #3B4859}
+
+/* ===== shell ===== */
+.shell{display:flex;min-height:calc(100vh - 46px)}
+.fsidebar{width:var(--sidebar);flex-shrink:0;background:#fff;border-right:1px solid var(--gray-200);padding:14px 0;position:sticky;top:46px;height:calc(100vh - 46px);overflow-y:auto}
+.fsb-brand{padding:4px 18px 14px}
+.fsb-brand b{display:block;font-size:13px;color:var(--gray-900)}
+.fsb-brand span{font-size:11px;color:var(--gray-500)}
+.nav-item{display:flex;align-items:center;gap:9px;margin:2px 8px;padding:9px 10px;border-radius:8px;font-size:12.5px;line-height:1.3;color:var(--gray-600);cursor:pointer;border:none;background:none;width:calc(100% - 16px);text-align:left;transition:background 150ms,color 150ms}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.nav-item:hover{background:var(--gray-100);color:var(--gray-800)}
+.nav-item.active{background:var(--az-ink);color:#fff;font-weight:600}
+.nav-item.active svg{color:var(--az-orange)}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.pagehead{background:#fff;border-bottom:1px solid var(--gray-200);padding:16px 22px 0}
+.pagehead h1{font-size:21px;font-weight:700;color:var(--gray-900)}
+.pagehead .ph-sub{font-size:12px;color:var(--gray-500);margin-top:3px}
+.top-tabs{display:flex;overflow-x:auto;margin-top:12px}
+.tab{padding:11px 16px;font-size:13.5px;font-weight:500;color:var(--gray-500);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--gray-700)}
+.tab.on{color:var(--az-ink);border-bottom-color:var(--az-orange);font-weight:600}
+
+/* ===== filter strip ===== */
+.filter-strip{display:flex;flex-direction:column;row-gap:8px;padding:10px 22px;background:#fff;border-bottom:1px solid var(--gray-200)}
+.frow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;width:100%}
+.frow .freset{margin-left:auto}
+.fsearch{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 11px;flex:1;min-width:220px;max-width:340px;border:1px solid var(--gray-200);border-radius:8px;background:#fff}
+.fsearch:focus-within{border-color:var(--az-orange);box-shadow:0 0 0 3px var(--orange-100)}
+.fsearch svg{width:14px;height:14px;color:var(--gray-400);flex-shrink:0}
+.fsearch input{border:none;outline:none;font-family:inherit;font-size:13px;color:var(--gray-800);width:100%;background:none}
+.fpill{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 4px 0 10px;flex-shrink:0;border:1px solid var(--gray-200);border-radius:8px;background:#fff;cursor:pointer}
+.fpill:hover{border-color:var(--gray-300)}
+.fpill:focus-within{border-color:var(--az-orange);box-shadow:0 0 0 3px var(--orange-100)}
+.fpill.on{border-color:var(--az-orange);background:var(--orange-50)}
+.fpill > span{font-size:10.5px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.fpill select{border:none;outline:none;background:none;font-family:inherit;font-size:12.5px;font-weight:500;color:var(--gray-800);cursor:pointer;padding-right:2px;max-width:190px}
+.segmented{display:inline-flex;background:var(--gray-100);border-radius:8px;padding:2px;height:32px;flex-shrink:0}
+.segmented button{border:none;background:none;padding:0 11px;border-radius:6px;font-size:12.5px;font-weight:500;color:var(--gray-500);cursor:pointer}
+.segmented button:hover{color:var(--gray-700)}
+.segmented button.on{background:#fff;color:var(--az-ink);font-weight:600;box-shadow:var(--shadow-1)}
+.freset{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;flex-shrink:0;border:none;border-radius:8px;background:var(--orange-50);color:var(--az-orange-600);font-size:12.5px;font-weight:600;cursor:pointer}
+.freset:hover{background:var(--orange-100)}
+.freset .badge{background:var(--az-orange-600);color:#fff;border-radius:99px;padding:0 6px;font-size:11px}
+.fscope{font-size:11px;color:var(--gray-500);padding:0 2px}
+.fscope b{color:var(--gray-700)}
+[data-f].hide{display:none!important}
+
+/* ===== page + cards ===== */
+.page{padding:18px 22px 60px;display:none}
+.page.on{display:block}
+.rowhd{display:flex;align-items:center;gap:10px;margin:2px 0 10px}
+.rowhd h2{font-size:13px;font-weight:700;color:var(--gray-800)}
+.rowhd .rh-sub{font-size:11.5px;color:var(--gray-500)}
+.rowhd .sp{flex:1}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:12px;margin-bottom:16px}
+.kpi-card{background:#fff;border-radius:12px;box-shadow:var(--shadow-1);padding:16px 18px;display:flex;flex-direction:column;gap:5px;cursor:pointer;transition:box-shadow 200ms,transform 150ms var(--ease-out);border:1px solid transparent;position:relative}
+.kpi-card:hover{box-shadow:var(--shadow-2);transform:translateY(-1px);border-color:var(--gray-200)}
+.kpi-card .go{position:absolute;top:14px;right:14px;color:var(--gray-300)}
+.kpi-card:hover .go{color:var(--az-blue)}
+.kpi-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--blue-50);color:var(--az-blue);margin-bottom:3px}
+.kpi-icon svg{width:16px;height:16px}
+.kpi-number{font-size:26px;font-weight:700;color:var(--gray-900);line-height:1.1}
+.kpi-number .unit{font-size:14px;font-weight:600;color:var(--gray-400)}
+.kpi-label{font-size:12.5px;color:var(--gray-500);min-height:32px}
+.kpi-delta{font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:4px}
+.up{color:var(--ok)} .down{color:var(--bad)} .flat{color:var(--gray-500)}
+.kpi-bar{height:5px;background:var(--gray-100);border-radius:99px;overflow:hidden;margin-top:6px}
+.kpi-bar i{display:block;height:100%;border-radius:99px}
+
+.card{background:#fff;border-radius:12px;box-shadow:var(--shadow-1);margin-bottom:16px;overflow:visible}
+.card-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px 0}
+.card-title{font-size:14px;font-weight:700;color:var(--gray-900)}
+.card-hd .sub{font-size:11.5px;color:var(--gray-500);margin-top:2px;line-height:1.5}
+.card-bd{padding:14px 18px 18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid32{display:grid;grid-template-columns:3fr 2fr;gap:16px}
+@media(max-width:1080px){.grid2,.grid32{grid-template-columns:1fr}}
+
+/* ===== download control ===== */
+.cardtools{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.dlbtn{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 8px;border:1px solid var(--gray-200);background:#fff;border-radius:7px;color:var(--gray-600);cursor:pointer}
+.dlbtn:hover{border-color:var(--az-blue);color:var(--az-blue);background:var(--blue-50)}
+.dlmenu{position:fixed;z-index:120;background:#fff;border:1px solid var(--gray-200);border-radius:9px;box-shadow:var(--shadow-3);padding:5px;display:none;min-width:168px}
+.dlmenu.on{display:block}
+.dlmenu button{display:flex;align-items:center;gap:8px;width:100%;border:none;background:none;text-align:left;font-size:12.5px;color:var(--gray-700);padding:7px 9px;border-radius:6px;cursor:pointer}
+.dlmenu button:hover{background:var(--gray-100)}
+.dlmenu .hd{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-400);padding:5px 9px 3px;font-weight:700}
+
+/* ===== theme tiles ===== */
+.tile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(296px,1fr));gap:14px}
+.tile{background:#fff;border-radius:12px;box-shadow:var(--shadow-1);border-top:3px solid var(--gray-300);padding:16px 18px 12px;cursor:pointer;transition:box-shadow 200ms,transform 150ms var(--ease-out)}
+.tile:hover{box-shadow:var(--shadow-2);transform:translateY(-1px)}
+.tile-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.tile-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tile-ic svg{width:17px;height:17px}
+.tile-hd b{font-size:14px;font-weight:700;flex:1;line-height:1.25}
+.tile-chip{background:var(--gray-100);color:var(--gray-600);border-radius:99px;padding:2px 9px;font-size:11px;font-weight:600;white-space:nowrap}
+.tile-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;font-size:12.5px;color:var(--gray-500)}
+.tile-row b{font-size:13.5px;color:var(--gray-900);font-variant-numeric:tabular-nums}
+.tile-row.big b{font-size:19px}
+.tile-prog{margin:6px 0 2px}
+.tile-prog .lbl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--gray-500);margin-bottom:4px}
+.tile-prog .tr{height:7px;background:var(--gray-100);border-radius:99px;overflow:hidden;position:relative}
+.tile-prog .tr i{display:block;height:100%;border-radius:99px}
+.tile-ft{display:flex;align-items:center;gap:8px;border-top:1px solid var(--gray-100);margin-top:11px;padding-top:9px;font-size:11.5px;color:var(--gray-500)}
+.tile-ft .dot{width:8px;height:8px;border-radius:99px;flex-shrink:0}
+.tile-ft .go{margin-left:auto;color:var(--az-blue);font-weight:600}
+
+/* ===== indicator cards (theme detail) ===== */
+.icard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:14px}
+.icard{background:#fff;border-radius:12px;box-shadow:var(--shadow-1);padding:15px 17px 13px;border:1px solid transparent;cursor:pointer;transition:box-shadow 200ms,transform 150ms var(--ease-out)}
+.icard:hover{box-shadow:var(--shadow-2);transform:translateY(-1px);border-color:var(--gray-200)}
+.icard-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.icard-id{background:var(--az-ink);color:#fff;border-radius:6px;padding:2px 7px;font-size:10.5px;font-weight:700;letter-spacing:.03em}
+.icard-n{font-size:12.5px;font-weight:600;color:var(--gray-800);line-height:1.35;margin-bottom:10px;min-height:34px}
+.icard-big{display:flex;align-items:baseline;gap:8px}
+.icard-big b{font-size:24px;font-weight:700;line-height:1.05}
+.icard-big span{font-size:11.5px;color:var(--gray-500)}
+.icard-mini{display:flex;gap:4px;margin-top:10px}
+.icard-mini div{flex:1;text-align:center;background:var(--gray-50);border-radius:6px;padding:5px 2px}
+.icard-mini span{display:block;font-size:9.5px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em}
+.icard-mini b{font-size:11.5px;font-variant-numeric:tabular-nums}
+.icard-ft{display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:9px;border-top:1px solid var(--gray-100);font-size:11px;color:var(--gray-500)}
+.icard-ft .go{margin-left:auto;color:var(--az-blue);font-weight:600}
+
+.crumbnav{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.backbtn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border:1px solid var(--gray-200);background:#fff;border-radius:8px;font-size:12.5px;color:var(--gray-700);cursor:pointer}
+.backbtn:hover{border-color:var(--az-orange);color:var(--az-orange-600)}
+
+/* ===== tables ===== */
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:var(--gray-50);color:var(--gray-600);text-align:left;padding:8px 10px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;border-bottom:1px solid var(--gray-200)}
+td{padding:7px 10px;border-bottom:1px solid var(--gray-100);white-space:nowrap}
+tbody tr[data-drill]{cursor:pointer}
+tbody tr[data-drill]:hover td{background:var(--blue-50)}
+tr.grouprow td{background:var(--gray-100);font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--az-ink)}
+tr.totalrow td{background:var(--orange-50);font-weight:700;border-top:2px solid var(--az-orange)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.muted{color:var(--gray-400)}
+
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11px;font-weight:700}
+.p-ok{background:var(--ok-bg);color:var(--ok)} .p-warn{background:var(--warn-bg);color:var(--warn)}
+.p-bad{background:var(--bad-bg);color:var(--bad)} .p-none{background:var(--none-bg);color:var(--none)}
+.flag{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:11px}
+.flag i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--gray-600);margin-bottom:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+.note{background:var(--blue-50);border-left:3px solid var(--az-blue);border-radius:0 8px 8px 0;padding:10px 12px;font-size:12px;color:var(--gray-700);line-height:1.55;margin-top:12px}
+.note.warn{background:var(--warn-bg);border-left-color:var(--warn)}
+.note.bad{background:var(--bad-bg);border-left-color:var(--bad)}
+.note b{color:var(--gray-900)}
+
+.srcbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:10.5px;color:var(--gray-500);padding:8px 18px;background:var(--gray-50);border-top:1px solid var(--gray-100);border-radius:0 0 12px 12px}
+.srctag{background:#fff;border:1px solid var(--gray-200);border-radius:99px;padding:1px 8px;font-weight:600}
+.srctag.live{border-color:var(--ok);color:var(--ok)}
+.srctag.sheet{border-color:var(--az-blue);color:var(--az-blue)}
+.srctag.none{border-color:var(--bad);color:var(--bad)}
+
+/* ===== drawer ===== */
+.scrim{position:fixed;inset:0;background:rgba(19,26,34,.42);opacity:0;pointer-events:none;transition:opacity 200ms;z-index:80}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;width:min(820px,96vw);height:100vh;background:#fff;box-shadow:var(--shadow-3);transform:translateX(100%);transition:transform 260ms var(--ease-out);z-index:90;display:flex;flex-direction:column}
+.drawer.on{transform:none}
+.drawer-hd{padding:16px 20px;border-bottom:1px solid var(--gray-200);display:flex;align-items:flex-start;gap:12px}
+.drawer-hd .dic{width:34px;height:34px;border-radius:9px;background:var(--blue-50);color:var(--az-blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.drawer-hd .dic svg{width:17px;height:17px}
+.drawer-hd .eyebrow{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gray-400)}
+.drawer-hd h3{font-size:16px;font-weight:700;line-height:1.25}
+.drawer-hd .sub{font-size:11.5px;color:var(--gray-500);margin-top:3px}
+.drawer-hd .sp{flex:1}
+.drawer-x{border:none;background:var(--bad-bg);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:14px;color:var(--bad);flex-shrink:0}
+.drawer-bd{padding:16px 20px 30px;overflow-y:auto;flex:1;background:var(--gray-50)}
+.dpanel{background:#fff;border-radius:11px;box-shadow:var(--shadow-1);margin-bottom:14px;overflow:hidden}
+.dpanel-hd{padding:13px 16px 0;font-size:13px;font-weight:700}
+.dpanel-bd{padding:11px 16px 14px}
+.dpanel-bd.flush{padding:0}
+.dscroll{max-height:400px;overflow:auto}
+.dfoot{padding:9px 16px;font-size:11.5px;color:var(--gray-500);border-top:1px solid var(--gray-100);background:var(--gray-50)}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:9px}
+.statgrid div{background:var(--gray-50);border-radius:9px;padding:9px 11px}
+.statgrid span{display:block;font-size:10.5px;color:var(--gray-500);margin-bottom:2px}
+.statgrid b{font-size:16px;font-variant-numeric:tabular-nums}
+.crumb{font-size:11px;color:var(--gray-500);margin-bottom:8px}
+.crumb b{color:var(--az-blue)}
+
+/* ===== chart primitives (inline SVG / CSS — no external libs) ===== */
+.hbar{display:flex;align-items:center;gap:10px;margin:9px 0;cursor:pointer;padding:2px 4px;border-radius:6px}
+.hbar:hover{background:var(--gray-50)}
+.hbar .lb{width:150px;font-size:11.5px;color:var(--gray-700);text-align:right;flex-shrink:0}
+.hbar .tr{flex:1;height:16px;background:var(--gray-100);border-radius:4px;overflow:hidden;position:relative}
+.hbar .tr i{display:block;height:100%;border-radius:0 4px 4px 0}
+.hbar .tr .tgt{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--gray-700)}
+.hbar .vl{width:96px;font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;flex-shrink:0}
+.spark{display:inline-flex;align-items:flex-end;gap:2px;height:20px}
+.spark i{width:5px;border-radius:1px 1px 0 0;background:var(--gray-300)}
+.spark i.hi{background:var(--az-orange)}
+.heat td.hc{text-align:center;font-weight:600;font-variant-numeric:tabular-nums;cursor:pointer}
+.donut-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center}
+.stackbar{display:flex;height:22px;border-radius:4px;overflow:hidden;gap:2px;background:var(--gray-100)}
+.stackbar i{display:block;cursor:pointer}
+svg .gridline{stroke:var(--gray-200);stroke-width:1}
+svg .axis{stroke:var(--gray-300);stroke-width:1}
+svg text{font-family:var(--font-sans);fill:var(--gray-500);font-size:10px}
+svg text.vlab{fill:var(--gray-700);font-size:10px;font-weight:600}
+
+.empty{padding:26px;text-align:center;color:var(--gray-500);font-size:12.5px;background:var(--gray-50);border:1px dashed var(--gray-300);border-radius:10px}
+.empty b{display:block;color:var(--gray-700);font-size:13px;margin-bottom:4px}
+
+@media print{
+  .gd-topbar,.fsidebar,.filter-strip,.drawer,.scrim{display:none!important}
+  .page{display:block!important;page-break-after:always}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<div class="gd-topbar">
+  <a class="gd-back" href="#"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Back to platform</a>
+  <span class="gd-wordmark">amazon<span class="smile">&#x2323;</span></span>
+  <span class="gd-topbar-title">iNOPS Dashboard</span>
+  <div class="gd-topbar-spacer"></div>
+  <div class="gd-topbar-meta">
+    <span id="gdAsAt"></span>
+    <button class="gd-refresh" id="gdRefresh" title="Refetch this section, bypassing the 5-minute cache">
+      <span id="gdRefreshedAt">Refreshed 2 min ago</span>
+      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      Refresh
+    </button>
+    <span class="gd-topbar-user">Diksha Hazarika</span>
+  </div>
+</div>
+
+<div class="shell">
+  <aside class="fsidebar">
+    <div class="fsb-brand"><b>Amazon IN Ops</b><span>CSR · mGrant</span></div>
+    <button class="nav-item active" data-page="lead">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Leadership Overview</button>
+    <button class="nav-item" data-page="prog">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6.5 7 .9-5 4.9 1.2 7L12 18l-6.2 3.3L7 14.3l-5-4.9 7-.9z"/></svg>
+      Programme Overview</button>
+    <button class="nav-item" data-page="pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+      Pillar Leads Overview</button>
+  </aside>
+
+  <div class="main">
+    <div class="pagehead">
+      <h1 id="pgTitle">Leadership Overview</h1>
+      <div class="ph-sub" id="pgSub"></div>
+      <nav class="top-tabs" id="tabs"></nav>
+    </div>
+
+    <div class="filter-strip">
+      <div class="frow">
+        <div class="fsearch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="search" id="fSearch" placeholder="Search indicators, partners, sites…">
+        </div>
+        <div class="segmented" data-f="approval" data-seg="approval"><button class="on" data-v="0">All records</button><button data-v="1">Approved only</button><button data-v="2">Pending review</button></div>
+        <div class="segmented" data-f="metric" data-seg="metric"><button class="on" data-v="0">Both metrics</button><button data-v="1">Lives touched</button><button data-v="2">Lives impacted</button></div>
+        <button class="freset" id="fReset" style="display:none">Reset <span class="badge">0</span></button>
+      </div>
+      <div class="frow">
+        <label class="fpill on" data-f="fy"><span>FY</span><select id="fFY"></select></label>
+        <label class="fpill on" data-f="period"><span>Period</span><select id="fPeriod"></select></label>
+        <label class="fpill" data-f="charter"><span>Charter</span><select id="fCharter"></select></label>
+        <label class="fpill" data-f="pillar"><span>Pillar</span><select id="fPillar"></select></label>
+        <label class="fpill" data-f="bu"><span>Business Unit</span><select id="fBU"></select></label>
+        <label class="fpill" data-f="zone"><span>Zone</span><select id="fZone"></select></label>
+        <label class="fpill" data-f="partner"><span>Partner</span><select id="fPartner"></select></label>
+        <span class="fscope" id="fScope"></span>
+      </div>
+    </div>
+
+    <div class="page on" id="p-lead"></div>
+    <div class="page" id="p-prog"></div>
+    <div class="page" id="p-pill"></div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-hd" id="drawerHd"></div>
+  <div class="drawer-bd" id="drawerBd"></div>
+</aside>
+<div class="dlmenu" id="dlmenu"></div>
+
+<script>
+/* ============================================================
+   iNOPS Dashboard — wireframe v1.1
+   Structure mirrors the Vedanta grant-dashboard (rail → pagehead →
+   tabs → two-row filter strip → page, plus drawer drill-down).
+   Every figure on screen is computed from FACTS, so every filter
+   genuinely re-slices the page. Charts are inline SVG/CSS so the
+   file renders with no network.
+   ============================================================ */
+
+const F = n => n==null ? '—' : Math.round(n).toLocaleString('en-IN');
+const PCT = n => n==null ? '—' : (n*100).toFixed(0)+'%';
+const PCT1 = n => n==null ? '—' : (n*100).toFixed(1)+'%';
+const C = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)'];
+const SEQ = ['var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)','var(--s6)','var(--s7)'];
+
+function ragPill(p){
+  if(p==null) return '<span class="pill p-none">No goal</span>';
+  if(p>=1)    return '<span class="pill p-ok">'+PCT(p)+' &#10003;</span>';
+  if(p>=0.8)  return '<span class="pill p-warn">'+PCT(p)+' !</span>';
+  return '<span class="pill p-bad">'+PCT(p)+' &#9660;</span>';
+}
+function ragBarColor(p){ return p==null?'var(--gray-300)':p>=1?'var(--ok)':p>=0.8?'var(--warn)':'var(--bad)'; }
+function ragDot(p){ return p==null?'var(--gray-300)':p>=1?'var(--ok)':p>=0.8?'var(--warn)':'var(--bad)'; }
+
+/* ---------- source stamp under every card ---------- */
+function src(kind,text){
+  const cls = kind==='live'?'live':kind==='none'?'none':'sheet';
+  const lab = kind==='live'?'LIVE ON PROD':kind==='none'?'NO PLATFORM SOURCE':'FROM SHEET';
+  return '<div class="srcbar"><span class="srctag '+cls+'">'+lab+'</span><span>'+text+'</span></div>';
+}
+
+/* ============================================================
+   DOWNLOAD — every card that carries data registers its rows.
+   CSV and Excel are produced client-side; no network.
+   ============================================================ */
+const DL={}; let dlSeq=0;
+function reg(name,cols,rows){ const id='dl'+(++dlSeq); DL[id]={name:name,cols:cols,rows:rows}; return id; }
+const ICO_DL='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 21h16"/></svg>';
+const ICO_CV='<svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg>';
+function dlTool(id){
+  if(!id) return '';
+  return '<div class="cardtools"><button class="dlbtn" data-dl="'+id+'" title="Download this data">'+ICO_DL+ICO_CV+'</button></div>';
+}
+function csvEsc(v){ v=(v==null?'':String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
+function htmlEsc(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function doDownload(id,fmt){
+  const d=DL[id]; if(!d) return;
+  const stamp=new Date().toISOString().slice(0,10);
+  const fname='iNOPS_'+d.name.replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_')+'_'+stamp;
+  let blob,ext;
+  if(fmt==='csv'){
+    const txt=[d.cols.join(',')].concat(d.rows.map(r=>r.map(csvEsc).join(','))).join('\r\n');
+    blob=new Blob(['﻿'+txt],{type:'text/csv;charset=utf-8;'}); ext='csv';
+  }else{
+    const html='<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body>'+
+      '<table border="1"><thead><tr>'+d.cols.map(c=>'<th>'+htmlEsc(c)+'</th>').join('')+'</tr></thead><tbody>'+
+      d.rows.map(r=>'<tr>'+r.map(c=>'<td>'+htmlEsc(c)+'</td>').join('')+'</tr>').join('')+
+      '</tbody></table><p>Source: iNOPS Dashboard wireframe · '+htmlEsc(d.name)+' · exported '+stamp+'</p></body></html>';
+    blob=new Blob(['﻿'+html],{type:'application/vnd.ms-excel;charset=utf-8;'}); ext='xls';
+  }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fname+'.'+ext;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500);
+}
+const dlmenu=document.getElementById('dlmenu');
+function openDlMenu(btn,id){
+  const d=DL[id]||{rows:[]};
+  dlmenu.innerHTML='<div class="hd">'+(d.rows?d.rows.length:0)+' rows · current filters</div>'+
+    '<button data-fmt="csv" data-id="'+id+'">'+ICO_DL+' Download CSV</button>'+
+    '<button data-fmt="xls" data-id="'+id+'">'+ICO_DL+' Download Excel (.xls)</button>';
+  const r=btn.getBoundingClientRect();
+  dlmenu.style.top=(r.bottom+6)+'px';
+  dlmenu.style.left=Math.max(8,Math.min(r.right-176,window.innerWidth-186))+'px';
+  dlmenu.classList.add('on');
+}
+function closeDlMenu(){ dlmenu.classList.remove('on'); }
+
+function card(title,sub,body,srcHtml,dlId){
+  return '<div class="card"><div class="card-hd"><div><div class="card-title">'+title+'</div>'+
+    (sub?'<div class="sub">'+sub+'</div>':'')+'</div>'+dlTool(dlId)+'</div>'+
+    '<div class="card-bd">'+body+'</div>'+(srcHtml||'')+'</div>';
+}
+function rowHead(title,sub,dlId){
+  return '<div class="rowhd"><h2>'+title+'</h2>'+(sub?'<span class="rh-sub">'+sub+'</span>':'')+
+    '<span class="sp"></span>'+dlTool(dlId)+'</div>';
+}
+const ICO={
+  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
+  target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+  doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>',
+  alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+  grid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+  leaf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 019.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10z"/><path d="M2 21c0-3 1.9-5.7 5-7"/></svg>',
+  bag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a4 4 0 018 0v2"/></svg>',
+  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 9.3-8 10-4.6-.7-8-5-8-10V6z"/></svg>',
+  recycle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 19H4.8a2 2 0 01-1.7-3l2.4-4"/><path d="M11 5l2-3 2.6 4.4"/><path d="M17 19h2.2a2 2 0 001.7-3L18 11"/><path d="M9 22l-2-3 3-2"/><path d="M15 22h2"/><path d="M6.5 12L4 8"/></svg>',
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 5.6a5.5 5.5 0 00-7.8 0L12 6.6l-1-1a5.5 5.5 0 10-7.8 7.8l8.8 8.8 8.8-8.8a5.5 5.5 0 000-7.8z"/></svg>',
+  hand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 00-4 0v5"/><path d="M14 10V4a2 2 0 00-4 0v7"/><path d="M10 10.5V6a2 2 0 00-4 0v9"/><path d="M18 8a2 2 0 114 0v6a8 8 0 01-8 8h-2a8 8 0 01-8-8v-1a2 2 0 114 0"/></svg>'
+};
+/* ---------- horizontal bar with optional target marker ---------- */
+function hbar(label,val,max,color,valText,drill,targetPct){
+  const w = max? Math.max(val>0?1:0,(val/max)*100) : 0;
+  return '<div class="hbar" '+(drill?'data-drill="'+drill+'"':'')+'>'+
+    '<div class="lb">'+label+'</div>'+
+    '<div class="tr"><i style="width:'+w+'%;background:'+color+'"></i>'+
+      (targetPct!=null?'<span class="tgt" style="left:'+Math.min(99.5,targetPct*100)+'%"></span>':'')+
+    '</div>'+
+    '<div class="vl">'+(valText!=null?valText:F(val))+'</div></div>';
+}
+
+/* Nice axis top: 1 / 2 / 2.5 / 5 x 10^k, so ticks read 0 · 10k · 20k · 30k. */
+function niceMax(v){
+  if(v<=0) return 4;
+  const k=Math.pow(10,Math.floor(Math.log10(v)));
+  const r=v/k;
+  const step=r<=1?1:r<=2?2:r<=2.5?2.5:r<=5?5:10;
+  return step*k;
+}
+
+function groupedBars(cats, series, opts){
+  opts=opts||{};
+  const W=opts.w||520,H=opts.h||190,PL=48,PB=28,PT=10,PR=8;
+  const iw=W-PL-PR, ih=H-PT-PB;
+  const max=Math.max(1,...series.flatMap(s=>s.data));
+  const nice=niceMax(max);
+  const gw=iw/cats.length, bw=Math.max(5,Math.min(22,(gw-10)/series.length));
+  let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-height:'+H+'px" preserveAspectRatio="xMidYMid meet" role="img">';
+  for(let i=0;i<=4;i++){const y=PT+ih-(ih*i/4);
+    s+='<line class="gridline" x1="'+PL+'" y1="'+y+'" x2="'+(W-PR)+'" y2="'+y+'"/>';
+    s+='<text x="'+(PL-6)+'" y="'+(y+3)+'" text-anchor="end">'+F(Math.round(nice*i/4))+'</text>';}
+  cats.forEach((c,ci)=>{
+    series.forEach((se,si)=>{
+      const v=se.data[ci]||0, h=(v/nice)*ih;
+      const x=PL+ci*gw+(gw-bw*series.length-2*(series.length-1))/2+si*(bw+2);
+      s+='<rect x="'+x+'" y="'+(PT+ih-h)+'" width="'+bw+'" height="'+Math.max(0,h)+'" rx="3" fill="'+se.color+'"><title>'+se.name+' · '+c+': '+F(v)+'</title></rect>';
+    });
+    s+='<text x="'+(PL+ci*gw+gw/2)+'" y="'+(H-9)+'" text-anchor="middle">'+c+'</text>';
+  });
+  s+='<line class="axis" x1="'+PL+'" y1="'+(PT+ih)+'" x2="'+(W-PR)+'" y2="'+(PT+ih)+'"/></svg>';
+  return s;
+}
+
+function lineChart(cats, series, opts){
+  opts=opts||{};
+  const W=opts.w||520,H=opts.h||190,PL=50,PB=26,PT=10,PR=12;
+  const iw=W-PL-PR, ih=H-PT-PB;
+  const max=Math.max(1,...series.flatMap(s=>s.data));
+  const nice=niceMax(max);
+  const px=i=>PL+(cats.length===1?iw/2:(iw*i/(cats.length-1)));
+  const py=v=>PT+ih-(v/nice)*ih;
+  let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-height:'+H+'px" preserveAspectRatio="xMidYMid meet" role="img">';
+  for(let i=0;i<=4;i++){const y=PT+ih-(ih*i/4);
+    s+='<line class="gridline" x1="'+PL+'" y1="'+y+'" x2="'+(W-PR)+'" y2="'+y+'"/>';
+    s+='<text x="'+(PL-6)+'" y="'+(y+3)+'" text-anchor="end">'+F(Math.round(nice*i/4))+'</text>';}
+  cats.forEach((c,i)=>s+='<text x="'+px(i)+'" y="'+(H-8)+'" text-anchor="middle">'+c+'</text>');
+  series.forEach(se=>{
+    const d=se.data.map((v,i)=>(i?'L':'M')+px(i)+' '+py(v)).join(' ');
+    s+='<path d="'+d+'" fill="none" stroke="'+se.color+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"'+(se.dash?' stroke-dasharray="5 4"':'')+'/>';
+    se.data.forEach((v,i)=>{ s+='<circle cx="'+px(i)+'" cy="'+py(v)+'" r="4" fill="'+se.color+'" stroke="#fff" stroke-width="2"><title>'+se.name+' · '+cats[i]+': '+F(v)+'</title></circle>'; });
+  });
+  s+='<line class="axis" x1="'+PL+'" y1="'+(PT+ih)+'" x2="'+(W-PR)+'" y2="'+(PT+ih)+'"/></svg>';
+  return s;
+}
+
+function donut(items,opts){
+  opts=opts||{}; const R=54,r=33,cx=68,cy=68;
+  const tot=items.reduce((a,b)=>a+b.v,0)||1;
+  let a0=-Math.PI/2, s='<svg viewBox="0 0 136 136" width="136" height="136" role="img">';
+  items.forEach(it=>{
+    const a1=a0+(it.v/tot)*Math.PI*2, big=(a1-a0)>Math.PI?1:0;
+    const p=(ra,an)=>[cx+ra*Math.cos(an),cy+ra*Math.sin(an)];
+    const q0=p(R,a0),q1=p(R,a1),q2=p(r,a1),q3=p(r,a0);
+    s+='<path d="M'+q0[0]+' '+q0[1]+' A'+R+' '+R+' 0 '+big+' 1 '+q1[0]+' '+q1[1]+' L'+q2[0]+' '+q2[1]+' A'+r+' '+r+' 0 '+big+' 0 '+q3[0]+' '+q3[1]+' Z" fill="'+it.c+'" stroke="#fff" stroke-width="2"><title>'+it.k+': '+F(it.v)+'</title></path>';
+    a0=a1;
+  });
+  s+='<text x="68" y="64" text-anchor="middle" style="font-size:15px;font-weight:700;fill:var(--gray-900)">'+(opts.center||F(tot))+'</text>';
+  s+='<text x="68" y="79" text-anchor="middle" style="font-size:9px">'+(opts.sub||'total')+'</text></svg>';
+  const leg='<div style="display:flex;flex-direction:column;gap:6px;min-width:200px">'+items.map(it=>
+    '<span style="display:flex;align-items:center;gap:7px;font-size:11.5px"><i style="width:10px;height:10px;border-radius:3px;background:'+it.c+'"></i>'+it.k+' <b style="margin-left:auto;font-variant-numeric:tabular-nums">'+F(it.v)+'</b></span>').join('')+'</div>';
+  return '<div class="donut-wrap">'+s+leg+'</div>';
+}
+function legend(items){
+  return '<div class="legend">'+items.map(i=>'<span><i style="background:'+i.c+'"></i>'+i.k+'</span>').join('')+'</div>';
+}
+function emptyBox(t,b){ return '<div class="empty"><b>'+t+'</b>'+b+'</div>'; }
+
+/* ============================================================
+   DIMENSIONS
+   ============================================================ */
+const FY_LIST=['FY 26-27','FY 25-26','FY 24-25','FY 23-24','FY 22-23','FY 21-22'];
+const FY_FACTOR={'FY 26-27':1,'FY 25-26':0.86,'FY 24-25':0.64,'FY 23-24':0.47,'FY 22-23':0.31,'FY 21-22':0.19};
+const MON=['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
+const MONFULL=['April','May','June','July','August','September','October','November','December','January','February','March'];
+const SEASON=[0.92,0.86,1.02,0.97,1.06,1.12,0.83,0.91,1.00,1.04,1.09,1.18];
+const QTR={'Q1 · Apr–Jun':[0,1,2],'Q2 · Jul–Sep':[3,4,5],'Q3 · Oct–Dec':[6,7,8],'Q4 · Jan–Mar':[9,10,11]};
+/* FY 26-27 is open: partner returns exist to July 2026 only. */
+const FY_MONTHS={'FY 26-27':[0,1,2,3]};
+const BU_LIST=['INFC','ATS','UFF','AMZL','Unassigned'];
+const CHARTERS={1:'1 · Community Engagement',2:'2 · Associate Welfare',3:'3 · Volunteering'};
+
+/* Zone → Province → Locality → BU-Site. iNOPS geography is Amazon's
+   operational hierarchy: Zone(State) → Province(District) →
+   Locality(Block) → BU-Site(Gram Panchayat) in the underlying doctypes. */
+const GEO={
+  North:{w:0.3298,lon:77.2,lat:28.6,prov:{
+    'Haryana':{w:0.484,loc:{'Gurugram':{w:0.688,sites:['DEL5','DEL2','DEL4','DED3','DED4','DED5','DELU','MDEA','NCRU']},'Faridabad':{w:0.312,sites:['FRB1','FRB2','FRB3','FRB4','FRB5']}}},
+    'Delhi':{w:0.237,loc:{'New Delhi':{w:1,sites:['DEL1','DEL3','DXN1','DXN2','DEL7','DEL8']}}},
+    'Uttar Pradesh':{w:0.154,loc:{'Noida':{w:0.62,sites:['NOI1','NOI2','NOI3']},'Lucknow':{w:0.38,sites:['LKO1','LKO2']}}},
+    'Punjab':{w:0.067,loc:{'Ludhiana':{w:1,sites:['LUD1','LUD2']}}},
+    'Assam / WB / Odisha':{w:0.058,loc:{'Guwahati':{w:0.5,sites:['GAU1']},'Kolkata':{w:0.5,sites:['CCU1']}}}
+  }},
+  West:{w:0.4429,lon:74.6,lat:19.4,prov:{
+    'Maharashtra':{w:0.816,loc:{'Mumbai':{w:0.579,sites:['BOME','BOML','BOMN','BOMP','BOMD','BOT2','BOT3','MUMV','UBO1','BOM1','BOM5','PNT1']},'Thane':{w:0.231,sites:['THN1','THN2','THN3','THN4','THN5']},'Pune':{w:0.134,sites:['PNQ1','PNQ2','PNQ3']},'Nagpur':{w:0.056,sites:['NAG1','NAG2']}}},
+    'Gujarat':{w:0.093,loc:{'Ahmedabad':{w:1,sites:['AMD1','AMD2']}}},
+    'Rajasthan':{w:0.057,loc:{'Jaipur':{w:1,sites:['JAI1','JAI2']}}},
+    'Madhya Pradesh':{w:0.034,loc:{'Indore':{w:1,sites:['IDR1']}}}
+  }},
+  South:{w:0.2273,lon:77.6,lat:13.4,prov:{
+    'Karnataka':{w:0.447,loc:{'Bengaluru':{w:1,sites:['BLR4','BLR5','BLR7','BLR8','BLRG','BLRH','BLT4','SBCZ']}}},
+    'Telangana':{w:0.237,loc:{'Hyderabad':{w:1,sites:['HYD1','HYD3','HYD8','HYDA']}}},
+    'Tamil Nadu':{w:0.246,loc:{'Chennai':{w:1,sites:['MAA1','MAA3','MAA4','MAAB','SMAA']}}},
+    'Kerala / AP':{w:0.070,loc:{'Kochi':{w:1,sites:['COK1']}}}
+  }}
+};
+const ZN=Object.keys(GEO);
+const ZW=ZN.map(z=>GEO[z].w);
+const SITE_MASTER=(function(){ let n=0; ZN.forEach(z=>Object.keys(GEO[z].prov).forEach(p=>Object.keys(GEO[z].prov[p].loc).forEach(l=>{n+=GEO[z].prov[p].loc[l].sites.length;}))); return n; })();
+
+/* Deterministic pick inside a zone, so a record always lands on the same site. */
+function hash(s){ let h=2166136261; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0)/4294967295; }
+const SITEC={};
+function placeIn(zone,seed){
+  const z=GEO[zone], pk=Object.keys(z.prov);
+  let r=hash(seed+'|p'), acc=0, prov=pk[pk.length-1];
+  for(const p of pk){ acc+=z.prov[p].w; if(r<=acc){ prov=p; break; } }
+  const lk=Object.keys(z.prov[prov].loc);
+  r=hash(seed+'|l'); acc=0; let loc=lk[lk.length-1];
+  for(const l of lk){ acc+=z.prov[prov].loc[l].w; if(r<=acc){ loc=l; break; } }
+  /* round-robin the site inside the chosen locality so coverage spreads
+     across the master rather than piling onto a few codes */
+  const sites=z.prov[prov].loc[loc].sites;
+  const ck=zone+'|'+prov+'|'+loc;
+  SITEC[ck]=(SITEC[ck]||0)+1;
+  const site=sites[SITEC[ck]%sites.length];
+  return {prov:prov,loc:loc,site:site};
+}
+
+/* ============================================================
+   THE 22 INDICATORS — CE revised Goal / QBR Q2 framework.
+   ser  = Apr, May, Jun, Jul 2026 actuals (published where published)
+   goal = monthly goal (Jul–Sep quarter ÷ 3), MBR Page 0
+   buw  = July Business Unit split, Page 0. "Unassigned" is the
+          published residual: the indicator total less its BU columns.
+   ============================================================ */
+const THEMES=[
+  {k:'A.1 Food Security',ch:1,c:C[0],ic:ICO.leaf},
+  {k:'A.2 Livelihood',ch:1,c:C[1],ic:ICO.bag},
+  {k:'A.3 Social Security',ch:1,c:C[2],ic:ICO.shield},
+  {k:'A.4 Waste Management',ch:1,c:C[3],ic:ICO.recycle},
+  {k:'B Associate Welfare',ch:2,c:C[4],ic:ICO.heart},
+  {k:'C Volunteering',ch:3,c:'var(--gray-500)',ic:ICO.hand}
+];
+const GMPM={'Read India':.42,'SAAD Foundation':.34,'Way For Life':.24};
+function mix(base,extra){ return Object.assign({},base,extra); }
+
+const IND=[
+ {id:'A.1.1',pil:'A.1 Food Security',n:'Lives touched — food security awareness',form:'ICE Form',
+  ser:[14401,8747,16588,8224],goal:18685,buw:{INFC:1822,ATS:2019,UFF:399,AMZL:3238,Unassigned:746},
+  pt:{'Read India':.26,'SAAD Foundation':.21,'Way For Life':.15,'Akshaya Patra':.38},st:'mapped',meas:'touched'},
+ {id:'A.1.2',pil:'A.1 Food Security',n:'Counselling & care via Anganwadi workers',form:'MCH Activity Form',
+  ser:[41000,52000,80000,0],goal:14770,buw:{INFC:30,ATS:22,UFF:10,AMZL:38,Unassigned:6},
+  pt:{'SNEHA':1},st:'await',meas:'touched'},
+ {id:'A.1.3',pil:'A.1 Food Security',n:'Capacity building of Anganwadi workers',form:'MCH Activity Form',
+  ser:[3100,2800,4200,0],goal:8775,buw:{INFC:30,ATS:22,UFF:10,AMZL:38,Unassigned:6},
+  pt:{'SNEHA':1},st:'await',meas:'touched'},
+ {id:'A.1.4',pil:'A.1 Food Security',n:'Morning Nutrition Programme',form:'— no form deployed',
+  ser:[0,0,0,0],goal:17095,buw:{INFC:25,ATS:25,UFF:25,AMZL:25,Unassigned:0},
+  pt:{'Akshaya Patra':1},st:'unmapped',meas:'touched'},
+ {id:'A.1.5',pil:'A.1 Food Security',n:'Pantry + Orphan donations',form:'Pantry Collection (Food Rescue Form)',
+  ser:[14937,12930,15274,17028],goal:61462,buw:{INFC:0,ATS:0,UFF:16973,AMZL:0,Unassigned:55},
+  pt:{'UFF Pantry Programme':.78,'Way For Life':.22},st:'mapped',meas:'touched'},
+
+ {id:'A.2.1',pil:'A.2 Livelihood',n:'Livelihood awareness campaigns',form:'ICE Form',
+  ser:[1180,940,1320,0],goal:1942,buw:{INFC:28,ATS:18,UFF:6,AMZL:48,Unassigned:0},
+  pt:{'AccessDev':.3,'BuzzWomen':.3,'GAME':.25,'RTP':.15},st:'mapped',meas:'touched'},
+ {id:'A.2.2',pil:'A.2 Livelihood',n:'Skill development & enterprise promotion',form:'Livelihood Activity Form',
+  ser:[58,41,66,37],goal:492,buw:{INFC:21,ATS:0,UFF:0,AMZL:0,Unassigned:16},
+  pt:{'AccessDev':.4,'GAME':.3,'RTP':.2,'Neomotion':.1},st:'ambig',meas:'touched'},
+ {id:'A.2.3',pil:'A.2 Livelihood',n:'Menstrual hygiene practices',form:'MH Activity Form',
+  ser:[59511,36649,40546,46795],goal:35165,buw:{INFC:14910,ATS:2072,UFF:186,AMZL:26995,Unassigned:2632},
+  pt:{'She & We':.38,'Pinkishe':.34,'Read India':.16,'SAAD Foundation':.12},st:'mapped',meas:'touched'},
+
+ {id:'A.3.1',pil:'A.3 Social Security',n:'Financial wellbeing awareness',form:'ICE Form',
+  ser:[20621,20674,25950,3374],goal:17711,buw:{INFC:725,ATS:480,UFF:249,AMZL:1920,Unassigned:0},
+  pt:{'Head Held High':.40,'Jan Sahas':.24,'Read India':.16,'SAAD Foundation':.12,'Way For Life':.08},st:'mapped',meas:'touched'},
+ {id:'A.3.2',pil:'A.3 Social Security',n:'Enrolments to social entitlement schemes',form:'Scheme Application',
+  ser:[17538,16408,19735,19146],goal:21553,buw:{INFC:5062,ATS:2223,UFF:393,AMZL:10791,Unassigned:677},
+  pt:{'Head Held High':.38,'Jan Sahas':.35,'Read India':.12,'SAAD Foundation':.10,'Way For Life':.05},st:'ambig',meas:'impacted'},
+
+ {id:'A.4.1',pil:'A.4 Waste Management',n:'Community-led waste management',form:'— no form exists',
+  ser:[0,0,0,0],goal:3000,buw:{INFC:25,ATS:25,UFF:25,AMZL:25,Unassigned:0},
+  pt:{'Jan Sahas':1},st:'unmapped',meas:'touched'},
+
+ {id:'B.1.1',pil:'B Associate Welfare',n:'Samridhi — associate scheme enrolments',form:'Associate Welfare Form',
+  ser:[0,0,0,0],goal:4091,buw:{INFC:25,ATS:25,UFF:25,AMZL:25,Unassigned:0},
+  pt:{'FORD':1},st:'unmapped',meas:'impacted'},
+ {id:'B.1.2',pil:'B Associate Welfare',n:'Pratidhi Scholarships',form:'— form on hold',
+  ser:[0,0,0,0],goal:333,buw:{INFC:25,ATS:25,UFF:25,AMZL:25,Unassigned:0},
+  pt:{'Buddy4Study':1},st:'unmapped',meas:'impacted'},
+ {id:'B.1.3',pil:'B Associate Welfare',n:'Pratidhi Mentorship',form:'— split rule undefined',
+  ser:[0,0,0,0],goal:167,buw:{INFC:25,ATS:25,UFF:25,AMZL:25,Unassigned:0},
+  pt:{'Buddy4Study':1},st:'unmapped',meas:'impacted'},
+ {id:'B.1.4',pil:'B Associate Welfare',n:'Ashray Centres set up',form:'— form not deployed',
+  ser:[0,0,0,0],goal:0,buw:{INFC:25,ATS:25,UFF:25,AMZL:25,Unassigned:0},
+  pt:{'Read India':1},st:'unmapped',meas:'touched'},
+ {id:'B.1.5',pil:'B Associate Welfare',n:'Visits by delivery associates',form:'— no numeric field',
+  ser:[0,0,0,0],goal:117262,buw:{INFC:25,ATS:25,UFF:25,AMZL:25,Unassigned:0},
+  pt:{'Read India':1},st:'unmapped',meas:'touched'},
+ {id:'B.1.6',pil:'B Associate Welfare',n:'Skill development under DEI (GRC)',form:'— project closed',
+  ser:[0,0,0,0],goal:0,buw:{INFC:25,ATS:25,UFF:25,AMZL:25,Unassigned:0},
+  pt:{'Sarthak Foundation':1},st:'closed',meas:'touched'},
+
+ {id:'C.1.1',pil:'C Volunteering',n:'Unique Volunteers BB',form:'Goodera — outside mGrant',
+  ser:[0,0,0,0],goal:399,buw:{INFC:25,ATS:25,UFF:25,AMZL:25,Unassigned:0},
+  pt:{'Goodera':1},st:'outside',meas:'touched'},
+ {id:'C.1.3',pil:'C Volunteering',n:'Unique Volunteers',form:'Goodera — outside mGrant',
+  ser:[0,0,0,0],goal:8227,buw:{INFC:25,ATS:25,UFF:25,AMZL:25,Unassigned:0},
+  pt:{'Goodera':1},st:'outside',meas:'touched'},
+ {id:'C.1.4',pil:'C Volunteering',n:'Lives touched (Miles)',form:'Goodera — outside mGrant',
+  ser:[0,0,0,0],goal:22910,buw:{INFC:25,ATS:25,UFF:25,AMZL:25,Unassigned:0},
+  pt:{'Goodera':1},st:'outside',meas:'touched'}
+];
+const IND_BY={}; IND.forEach(i=>IND_BY[i.id]=i);
+const PARTNERS=(function(){ const s={}; IND.forEach(i=>Object.keys(i.pt).forEach(p=>s[p]=1)); return Object.keys(s).sort(); })();
+const ST_TAG={mapped:'<span class="pill p-ok">Mapped</span>',await:'<span class="pill p-warn">Awaiting data</span>',
+  ambig:'<span class="pill p-warn">Rule undefined</span>',unmapped:'<span class="pill p-bad">No source</span>',
+  closed:'<span class="pill p-none">Closed</span>',outside:'<span class="pill p-none">Outside mGrant</span>'};
+const ST_TXT={mapped:'Mapped',await:'Awaiting data',ambig:'Counting rule undefined',unmapped:'No source form',closed:'Closed',outside:'Outside mGrant'};
+/* ============================================================
+   FACT TABLE — one row per FY × month × indicator × BU × zone × partner.
+   Integer allocation is largest-remainder, so every published total is
+   reproduced exactly at the top and every slice below it adds up.
+   ============================================================ */
+function alloc(total,weights){
+  const sw=weights.reduce((a,b)=>a+b,0);
+  if(!sw||!total) return weights.map(()=>0);
+  const raw=weights.map(w=>total*w/sw);
+  const base=raw.map(Math.floor);
+  let rem=total-base.reduce((a,b)=>a+b,0);
+  const order=raw.map((v,i)=>[v-Math.floor(v),i]).sort((a,b)=>b[0]-a[0]);
+  for(let k=0;k<order.length&&rem>0;k++){ base[order[k][1]]++; rem--; }
+  return base;
+}
+const SURVEYORS=['Ajay Joon','Chanchal','Giriraj Gujjar','Jatin Kumar','Jay Singh','Mohit Prajapati','Suman Kakati',
+  'Amulya Jaising','Dhiraj Khairnar','Harsh Akhade','Rahul Nirbhavane','Jatinder Kaur','Komal Gaikwad',
+  'Vinayak Pundkar','Sunil Kumar','Suraj Mandal','Mehul Makwana','Shweta Pawar','Varsha Deogade',
+  'Vijayalakshmi','Bindu DN','G. Thejashwini','Harischandra Dhakne','Poonam Rathod'];
+
+const FACTS=[];
+(function build(){
+  let seq=0;
+  IND.forEach(ind=>{
+    const buKeys=Object.keys(ind.buw), buW=buKeys.map(k=>ind.buw[k]);
+    const ptKeys=Object.keys(ind.pt),  ptW=ptKeys.map(k=>ind.pt[k]);
+    FY_LIST.forEach(fy=>{
+      const fac=FY_FACTOR[fy];
+      const months=FY_MONTHS[fy]||[0,1,2,3,4,5,6,7,8,9,10,11];
+      const mean=ind.ser.reduce((a,b)=>a+b,0)/ind.ser.length;
+      months.forEach(mi=>{
+        const v = fy==='FY 26-27' ? ind.ser[mi] : Math.round(mean*fac*SEASON[mi]);
+        const g = Math.round((ind.goal||0)*(fy==='FY 26-27'?1:fac));
+        if(!v && !g){
+          /* the framework is 22 indicators whether or not they reported —
+             a retained zero row keeps the denominator honest */
+          seq++;
+          const z0=ZN[0], pl0=placeIn(z0,ind.id+fy+mi+'z');
+          FACTS.push({id:seq,fy:fy,m:mi,mon:MON[mi],ind:ind.id,pil:ind.pil,ch:THEMES.find(t=>t.k===ind.pil).ch,
+            bu:buKeys[0],z:z0,prov:pl0.prov,loc:pl0.loc,site:pl0.site,pt:ptKeys[0],
+            t:0,i:0,g:0,appr:false,srv:SURVEYORS[0],day:1});
+          return;
+        }
+        /* Goals are apportioned on the same shape as the actuals but with a
+           deterministic per-indicator lean, so achievement genuinely differs
+           by BU and by zone instead of being one ratio repeated everywhere.
+           Weights are normalised inside alloc(), so every published total
+           still lands exactly. */
+        const buWG=buKeys.map(k=>ind.buw[k]*(0.84+0.32*hash(ind.id+'|bg|'+k)));
+        const zWG=ZN.map((z,zi)=>ZW[zi]*(0.80+0.40*hash(ind.id+'|zg|'+z)));
+        const buV=alloc(v,buW), buG=alloc(g,buWG);
+        buKeys.forEach((bk,bi)=>{
+          if(!buV[bi] && !buG[bi]) return;
+          const zV=alloc(buV[bi],ZW), zG=alloc(buG[bi],zWG);
+          ZN.forEach((z,zi)=>{
+            if(!zV[zi] && !zG[zi]) return;
+            const pV=alloc(zV[zi],ptW), pG=alloc(zG[zi],ptW);
+            ptKeys.forEach((pn,pi)=>{
+              if(!pV[pi] && !pG[pi]) return;
+              const seed=ind.id+fy+mi+bk+z+pn;
+              const pl=placeIn(z,seed);
+              const h=hash(seed+'|a');
+              seq++;
+              FACTS.push({
+                id:seq, fy:fy, m:mi, mon:MON[mi], ind:ind.id, pil:ind.pil, ch:THEMES.find(t=>t.k===ind.pil).ch,
+                bu:bk, z:z, prov:pl.prov, loc:pl.loc, site:pl.site, pt:pn,
+                t:pV[pi], i:ind.meas==='impacted'?pV[pi]:0, g:pG[pi],
+                appr:h<0.24, srv:SURVEYORS[Math.floor(hash(seed+'|v')*SURVEYORS.length)%SURVEYORS.length],
+                day:1+Math.floor(hash(seed+'|d')*27)
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+})();
+
+/* ============================================================
+   FILTER STATE + SLICING
+   ============================================================ */
+const PERIODS=['Full year'].concat(Object.keys(QTR)).concat(MONFULL);
+function monthsOf(p){
+  if(p==='Full year') return [0,1,2,3,4,5,6,7,8,9,10,11];
+  if(QTR[p]) return QTR[p];
+  const i=MONFULL.indexOf(p);
+  return i<0?[0,1,2,3,4,5,6,7,8,9,10,11]:[i];
+}
+const DEF={fy:'FY 26-27',period:'July',charter:'All',pillar:'All',bu:'All',zone:'All',partner:'All',approval:0,metric:0,q:''};
+let S={page:'lead',tab:0,theme:null,pillar:'Social Security',
+       geo:{zone:null,province:null,locality:null},
+       f:Object.assign({},DEF)};
+
+function fyYear(fy){ return 2000+parseInt(fy.slice(3,5),10); }
+function periodLabel(f){
+  const fy=f.fy==='All years'?'all years':f.fy;
+  return f.period+' · '+fy;
+}
+function matches(r,f){
+  if(f.fy!=='All years' && r.fy!==f.fy) return false;
+  const ms=monthsOf(f.period); if(ms.indexOf(r.m)<0) return false;
+  if(f.charter!=='All' && CHARTERS[r.ch]!==f.charter) return false;
+  if(f.pillar!=='All' && r.pil!==f.pillar) return false;
+  if(f.bu!=='All' && r.bu!==f.bu) return false;
+  if(f.zone!=='All' && r.z!==f.zone) return false;
+  if(f.partner!=='All' && r.pt!==f.partner) return false;
+  if(f.approval===1 && !r.appr) return false;
+  if(f.approval===2 && r.appr) return false;
+  if(f.metric===2 && IND_BY[r.ind].meas!=='impacted') return false;
+  if(f.metric===1 && IND_BY[r.ind].meas==='impacted') return false;
+  if(f.q){
+    const q=f.q.toLowerCase();
+    const hay=(r.ind+' '+IND_BY[r.ind].n+' '+r.pt+' '+r.site+' '+r.z+' '+r.prov+' '+r.loc+' '+r.pil+' '+r.bu).toLowerCase();
+    if(hay.indexOf(q)<0) return false;
+  }
+  /* geography drill narrows on top of the zone filter */
+  if(S.geo.zone && r.z!==S.geo.zone) return false;
+  if(S.geo.province && r.prov!==S.geo.province) return false;
+  if(S.geo.locality && r.loc!==S.geo.locality) return false;
+  return true;
+}
+function slice(over){
+  const f=Object.assign({},S.f,over||{});
+  return FACTS.filter(r=>matches(r,f));
+}
+/* value accessor honours the metric segment */
+function VAL(r){ return S.f.metric===2 ? r.i : r.t; }
+function metricWord(){ return S.f.metric===2?'Lives impacted':S.f.metric===1?'Lives touched':'Lives reached'; }
+function sum(rows,fn){ let n=0; for(const r of rows) n+=fn(r); return n; }
+function totT(rows){ return sum(rows,r=>r.t); }
+function totI(rows){ return sum(rows,r=>r.i); }
+function totV(rows){ return sum(rows,VAL); }
+function totG(rows){ return sum(rows,r=>r.g); }
+function group(rows,key){
+  const m=new Map();
+  rows.forEach(r=>{
+    const k=key(r);
+    let o=m.get(k);
+    if(!o){ o={k:k,t:0,i:0,v:0,g:0,n:0,rows:[]}; m.set(k,o); }
+    o.t+=r.t; o.i+=r.i; o.v+=VAL(r); o.g+=r.g; o.n++; o.rows.push(r);
+  });
+  return [...m.values()];
+}
+function distinct(rows,key){ const s=new Set(); rows.forEach(r=>s.add(key(r))); return s; }
+
+/* previous comparable period, for the delta on every KPI */
+function prevFilter(){
+  const f=Object.assign({},S.f);
+  const mi=MONFULL.indexOf(f.period);
+  if(mi>=0){
+    if(mi===0){ const y=FY_LIST.indexOf(f.fy); if(y<0||y+1>=FY_LIST.length) return null; return Object.assign(f,{fy:FY_LIST[y+1],period:MONFULL[11]}); }
+    return Object.assign(f,{period:MONFULL[mi-1]});
+  }
+  const qs=Object.keys(QTR), qi=qs.indexOf(f.period);
+  if(qi>=0){
+    if(qi===0){ const y=FY_LIST.indexOf(f.fy); if(y<0||y+1>=FY_LIST.length) return null; return Object.assign(f,{fy:FY_LIST[y+1],period:qs[3]}); }
+    return Object.assign(f,{period:qs[qi-1]});
+  }
+  const y=FY_LIST.indexOf(f.fy); if(y<0||y+1>=FY_LIST.length) return null;
+  return Object.assign(f,{fy:FY_LIST[y+1]});
+}
+function prevSlice(){
+  const pf=prevFilter(); if(!pf) return null;
+  return FACTS.filter(r=>matches(r,pf));
+}
+function deltaOf(cur,prevTot){
+  if(prevTot==null||prevTot===0) return {delta:null,dir:'flat'};
+  const d=(cur-prevTot)/prevTot;
+  return {delta:Math.abs(d*100).toFixed(0)+'% vs '+prevLabel(),dir:d>0.005?'up':d<-0.005?'down':'flat'};
+}
+function prevLabel(){
+  const pf=prevFilter(); if(!pf) return 'prior period';
+  const mi=MONFULL.indexOf(pf.period);
+  return (mi>=0?MON[mi]:pf.period.replace(' · ',' '))+(pf.fy!==S.f.fy?' '+pf.fy:'');
+}
+function kpi(o){
+  return '<div class="kpi-card" data-drill="kpi:'+o.key+'">'+
+    '<span class="go"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>'+
+    '<div class="kpi-icon">'+o.ico+'</div>'+
+    '<div class="kpi-number">'+o.val+(o.unit?' <span class="unit">'+o.unit+'</span>':'')+'</div>'+
+    '<div class="kpi-label">'+o.label+'</div>'+
+    (o.delta?'<div class="kpi-delta '+o.dir+'">'+(o.dir==='up'?'&#9650;':o.dir==='down'?'&#9660;':'&#8212;')+' '+o.delta+'</div>':
+      '<div class="kpi-delta flat">&#8212; no prior period</div>')+
+    (o.pct!=null?'<div class="kpi-bar"><i style="width:'+Math.min(100,Math.max(0,o.pct*100))+'%;background:'+ragBarColor(o.pct)+'"></i></div>':'')+
+  '</div>';
+}
+
+/* ---- record-level rows behind any figure (drives drawers + downloads) ---- */
+const REC_COLS=['Record ID','Date','Form','Indicator','Indicator name','Charter','Pillar','Partner',
+  'Zone','Province','Locality','BU-Site','Business Unit','Surveyor','Lives touched','Lives impacted','Monthly goal share','Status'];
+function recRows(rows){
+  return rows.map(r=>{
+    const ind=IND_BY[r.ind];
+    const yy=fyYear(r.fy)+(r.m<=8?0:1);
+    const mm=String((r.m+3)%12+1).padStart(2,'0');
+    const dd=String(r.day).padStart(2,'0');
+    return ['INO-'+yy+mm+'-'+String(r.id).padStart(5,'0'), dd+'-'+MON[r.m]+'-'+yy, ind.form, r.ind, ind.n,
+      CHARTERS[r.ch], r.pil, r.pt, r.z, r.prov, r.loc, r.site, r.bu, r.srv, r.t, r.i, r.g,
+      r.appr?'Approved':'Pending review'];
+  });
+}
+function recTable(rows,cap){
+  if(!rows.length) return emptyBox('No records in this selection','Widen the filters, or clear the geography drill.');
+  const shown=rows.slice(0,cap||60);
+  const cols=['Record ID','Date','Indicator','Partner','BU-Site','BU','Surveyor','Touched','Impacted','Status'];
+  const body=shown.map(r=>{
+    const ind=IND_BY[r.ind];
+    const yy=fyYear(r.fy)+(r.m<=8?0:1);
+    const mm=String((r.m+3)%12+1).padStart(2,'0');
+    return '<tr><td><a href="#">INO-'+yy+mm+'-'+String(r.id).padStart(5,'0')+'</a></td>'+
+      '<td>'+String(r.day).padStart(2,'0')+'-'+MON[r.m]+'-'+yy+'</td>'+
+      '<td title="'+ind.n+'"><b>'+r.ind+'</b> '+ind.n.slice(0,26)+(ind.n.length>26?'…':'')+'</td>'+
+      '<td>'+r.pt+'</td><td>'+r.site+'</td><td>'+r.bu+'</td><td>'+r.srv+'</td>'+
+      '<td class="num">'+F(r.t)+'</td><td class="num'+(r.i?'':' muted')+'">'+(r.i?F(r.i):'–')+'</td>'+
+      '<td><span class="pill '+(r.appr?'p-ok':'p-warn')+'">'+(r.appr?'Approved':'Pending')+'</span></td></tr>';
+  }).join('');
+  return '<div class="dscroll"><table><thead><tr>'+cols.map(c=>'<th'+(c==='Touched'||c==='Impacted'?' class="num"':'')+'>'+c+'</th>').join('')+
+    '</tr></thead><tbody>'+body+'</tbody></table></div>'+
+    '<div class="dfoot">Showing 1–'+shown.length+' of '+F(rows.length)+' records · download returns all '+F(rows.length)+'</div>';
+}
+/* ============================================================
+   PAGES + ROUTER
+   ============================================================ */
+const PAGES = {
+  lead:{title:'Leadership Overview', sub:'Charter-level performance for IN Ops — the live Page Zero. Role profile: <b>CSR Head · Donor Admin</b>.',
+        tabs:['Overview','Theme Overview','Business Units','Trend'],
+        filters:['approval','metric','fy','period','charter','pillar','bu','zone','partner'],
+        scope:''},
+  prog:{title:'Programme Overview', sub:'Reconciliation, pace against target and partner delivery against MoU. Role profile: <b>Programme Manager (Arunima)</b>.',
+        tabs:['Reconciliation vs Page 0','YTD vs Target','Performance vs MoU'],
+        filters:['fy','period','partner'],
+        scope:'Source: <b>Social Security pillar pack, Apr–Jun 2026</b> — FY, period and partner apply; charter, BU and zone are not cut in that pack.'},
+  pill:{title:'Pillar Leads Overview', sub:'Pillar-owned operational view. Role profile: <b>Pillar Lead</b>, row-scoped to the lead\'s own pillar.',
+        tabs:['Surveyor Activity','Narrative vs Data Report','Data Quality'],
+        filters:['fy','period','partner'],
+        scope:'Source: <b>Social Security pillar pack, Apr–Jun 2026</b> — partner and period apply; the pillar switcher below sets the pillar.'}
+};
+
+/* The pillar pack covers Apr–Jun 2026 only, so those two modules open on Q1
+   rather than on the Leadership default of July. An explicit period change
+   afterwards is respected — the empty state then says why. */
+function ensurePackPeriod(){
+  if(S.page==='lead') return;
+  if(S.f.fy!=='All years' && S.f.fy!==PACK_FY) return;
+  if(packMonths().length) return;
+  S.f.period='Q1 · Apr–Jun';
+  const e=document.getElementById('fPeriod'); if(e) e.value=S.f.period;
+}
+function setPage(p){ S.page=p; S.tab=0; S.theme=null; ensurePackPeriod(); render(); }
+function setTab(i){ S.tab=i; S.theme=null; render(); }
+
+function renderTabs(){
+  const P=PAGES[S.page];
+  document.getElementById('tabs').innerHTML=P.tabs.map((x,i)=>'<button class="tab '+(i===S.tab?'on':'')+'" data-i="'+i+'">'+x+'</button>').join('');
+  document.getElementById('pgTitle').textContent=P.title;
+  document.getElementById('pgSub').innerHTML=P.sub;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===S.page));
+  document.querySelectorAll('[data-f]').forEach(el=>el.classList.toggle('hide',P.filters.indexOf(el.dataset.f)<0));
+  document.getElementById('fScope').innerHTML=P.scope||'';
+}
+function render(){
+  renderTabs();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  const host=document.getElementById('p-'+S.page);
+  host.classList.add('on');
+  if(S.page==='lead') host.innerHTML=renderLead(S.tab);
+  if(S.page==='prog') host.innerHTML=renderProg(S.tab);
+  if(S.page==='pill') host.innerHTML=renderPill(S.tab);
+  syncReset();
+  location.hash='#/'+S.page+'/'+S.tab+(S.theme?'/'+encodeURIComponent(S.theme):'');
+}
+
+/* ============================================================
+   MODULE 1 — LEADERSHIP OVERVIEW
+   ============================================================ */
+function renderLead(tab){
+  if(tab===0) return leadOverview();
+  if(tab===1) return S.theme? themeDetail(S.theme) : themeOverview();
+  if(tab===2) return leadBU();
+  return leadTrend();
+}
+
+function leadOverview(){
+  const rows=slice(), prev=prevSlice();
+  const t=totT(rows), i=totI(rows), g=totG(rows);
+  const v=totV(rows), pv=prev?(S.f.metric===2?totI(prev):totT(prev)):null;
+  const pi=prev?totI(prev):null;
+  const sites=distinct(rows.filter(r=>r.t>0),r=>r.site).size;
+  const indsWith=distinct(rows.filter(r=>r.t>0),r=>r.ind).size;
+  const indsAll=distinct(rows,r=>r.ind).size;
+  const byInd=group(rows,r=>r.ind).filter(o=>o.g>0);
+  const onTrack=byInd.filter(o=>o.v>=o.g).length;
+  const dT=deltaOf(v,pv), dI=deltaOf(i,pi);
+
+  const recId=reg('Records '+periodLabel(S.f),REC_COLS,recRows(rows));
+  const k=rowHead('Key figures','Every card is the current filter slice — click one for the rows behind it',recId)+
+    '<div class="kpi-row">'+
+    kpi({key:'touched',ico:ICO.users,val:F(v),label:metricWord()+' — '+periodLabel(S.f),delta:dT.delta,dir:dT.dir,pct:g?v/g:null})+
+    (S.f.metric===2
+      ? kpi({key:'impacted',ico:ICO.doc,val:F(rows.filter(r=>r.i>0).length),label:'Enrolment submissions behind that figure',delta:'metric filter: impacted only',dir:'flat'})
+      : kpi({key:'impacted',ico:ICO.check,val:F(i),label:'Lives impacted — scheme enrolments',delta:dI.delta,dir:dI.dir}))+
+    kpi({key:'sites',ico:ICO.pin,val:String(sites),unit:'/ '+SITE_MASTER,label:'BU-Sites with a submission in this slice',delta:PCT(sites/SITE_MASTER)+' of the site master',dir:sites/SITE_MASTER>0.75?'up':'flat',pct:sites/SITE_MASTER})+
+    kpi({key:'report',ico:ICO.doc,val:String(indsWith),unit:'/ '+indsAll,label:'Indicators with a submission',delta:(indsAll-indsWith)+' filed nothing',dir:'down',pct:indsAll?indsWith/indsAll:null})+
+    kpi({key:'ontrack',ico:ICO.target,val:String(onTrack),unit:'/ '+byInd.length+' with a goal',label:'Indicators at or above the goal',delta:PCT(g?t/g:0)+' of goal overall',dir:onTrack?'up':'flat',pct:byInd.length?onTrack/byInd.length:null})+
+  '</div>';
+
+  if(!rows.length) return k+emptyBox('Nothing reported in this slice','No partner return matches '+periodLabel(S.f)+' on the current filters. Clear a filter, or pick a period that has closed.');
+
+  const mapCard = card('Geographic footprint — reach by zone',
+    'Click a zone to drill: Zone → Province → Locality → BU-Site. iNOPS geography is Amazon\'s operational hierarchy, not administrative India.',
+    '<div class="grid32"><div>'+indiaMap(rows)+'</div><div>'+geoPanel(rows)+'</div></div>',
+    src('live','Site master + ICE Form geography, read from inops.mgrant.in on 22 Sep 2026'),
+    reg('Geography '+periodLabel(S.f),['Zone','Province','Locality','BU-Site','Lives touched','Lives impacted','Goal share','Records'],
+      group(rows,r=>r.z+'|'+r.prov+'|'+r.loc+'|'+r.site).map(o=>o.k.split('|').concat([o.t,o.i,o.g,o.n]))));
+
+  const byPil=THEMES.map(th=>{
+    const o=group(rows.filter(r=>r.pil===th.k),()=>th.k)[0];
+    return {k:th.k,a:o?o.v:0,g:o?o.g:0,c:th.c};
+  }).filter(r=>r.a||r.g);
+  const maxG=Math.max(1,...byPil.map(r=>Math.max(r.a,r.g)));
+  const pillarCard = card('Pillar performance against the goal',
+    'Bar = actual. The vertical rule on each track is that pillar\'s goal for the selected period. Click a bar to open the pillar.',
+    legend([{k:metricWord(),c:'var(--c1)'},{k:'Goal',c:'var(--gray-700)'}])+
+    byPil.map(r=>hbar(r.k,r.a,maxG,ragBarColor(r.g?r.a/r.g:null),F(r.a)+'  '+(r.g?PCT(r.a/r.g):''),'pillar:'+r.k,r.g?r.g/maxG:null)).join(''),
+    src('sheet','Amazon_iNOPS_MBR_July2026.xlsx · Page 0. Goal = Jul–Sep quarter ÷ 3'),
+    reg('Pillar performance '+periodLabel(S.f),['Pillar','Actual','Goal','% of goal'],byPil.map(r=>[r.k,r.a,r.g,r.g?PCT1(r.a/r.g):''])));
+
+  const byPart=group(rows,r=>r.pt).filter(o=>o.v>0).sort((a,b)=>b.v-a.v);
+  const top=byPart.slice(0,4), rest=byPart.slice(4);
+  const dItems=top.map((o,ix)=>({k:o.k,v:o.v,c:C[ix]}));
+  if(rest.length) dItems.push({k:rest.length+' other partners',v:rest.reduce((a,b)=>a+b.v,0),c:'var(--gray-300)'});
+  const donutCard = card('Where the reach came from',
+    byPart.length+' partners reported in this slice; '+(PARTNERS.length-byPart.length)+' of the '+PARTNERS.length+' on the framework did not.',
+    byPart.length?donut(dItems,{center:F(totV(rows)),sub:metricWord().toLowerCase()}):emptyBox('No partner returns','Nothing to split.'),
+    src('sheet','Amazon_iNOPS_MBR_July2026.xlsx · Partner Goals'),
+    reg('Partner split '+periodLabel(S.f),['Partner','Lives touched','Lives impacted','Goal share','Records'],byPart.map(o=>[o.k,o.t,o.i,o.g,o.n])));
+
+  const silent=IND.filter(x=>x.st==='unmapped'||x.st==='outside').length;
+  const gap = '<div class="note bad"><b>Two structural gaps this screen cannot hide.</b> '+silent+
+    ' of the 22 indicators have no source form at all, and the entire Volunteering charter runs on Goodera outside mGrant. '+
+    'Every one of those rows is retained reading zero, so it fills the moment the return arrives — a blank row and a reported nil are not the same thing and are never drawn the same way.</div>';
+
+  return k + mapCard + '<div class="grid2">'+pillarCard+donutCard+'</div>' + gap;
+}
+
+/* ---- India outline: vertices are real lon/lat, projected at render time
+   (x = (lon−67)·0.94k, y = (37.6−lat)·k) so the silhouette is the country,
+   not a schematic blob, and the zone markers sit where the cities are. ---- */
+const IN_RING=[
+ [77.0,35.5],[76.0,35.9],[75.0,35.2],[74.3,34.8],[73.9,34.2],[74.2,33.5],[74.3,32.9],[75.0,32.5],[74.7,31.7],
+ [74.5,30.9],[73.9,30.2],[73.4,29.9],[73.0,29.2],[72.9,28.2],[71.9,27.9],[70.8,28.0],[70.1,27.5],[69.5,26.9],
+ [70.1,26.2],[70.6,25.7],[70.9,24.7],[71.1,24.2],[70.2,24.2],[69.3,24.2],[68.5,23.9],[68.2,23.6],[68.6,23.1],
+ [69.5,22.9],[70.3,22.8],[70.6,22.6],[69.7,22.4],[69.1,22.5],[68.95,22.1],[69.4,21.6],[70.4,20.9],[71.0,20.7],
+ [71.8,20.8],[72.2,21.2],[72.5,22.2],[72.6,22.4],[72.9,21.8],[72.7,21.2],[72.8,20.9],[72.85,20.4],[72.8,19.9],
+ [73.1,18.8],[73.3,17.9],[73.6,17.0],[73.9,15.9],[74.3,14.9],[74.7,13.9],[74.9,12.9],[75.4,12.0],[75.8,11.3],
+ [76.1,10.3],[76.3,9.6],[76.8,8.9],[77.2,8.4],[77.55,8.1],[78.2,8.8],[78.6,9.3],[79.2,9.4],[79.5,10.0],
+ [79.9,10.4],[79.8,11.3],[80.1,12.4],[80.3,13.2],[80.2,14.1],[80.5,15.1],[81.0,15.8],[81.8,16.4],[82.3,16.9],
+ [82.9,17.3],[83.4,17.8],[84.2,18.5],[84.9,19.2],[85.6,19.7],[86.3,20.0],[86.8,20.7],[87.0,21.5],[87.9,21.7],
+ [88.3,21.6],[88.9,21.9],[89.1,22.2],[88.8,22.7],[88.7,23.3],[88.5,23.9],[88.1,24.5],[88.2,25.2],[88.9,25.3],
+ [89.7,25.9],[89.9,26.1],[89.6,26.2],[90.1,26.1],[90.6,25.2],[91.5,25.2],[92.1,25.2],[92.4,24.9],[92.3,24.4],
+ [91.7,24.2],[91.4,24.1],[91.2,23.7],[91.4,23.2],[91.7,22.95],[92.15,23.6],[92.3,23.7],[92.6,22.0],[93.0,23.7],
+ [93.4,24.1],[94.0,25.0],[94.6,25.5],[95.1,26.1],[95.2,26.6],[96.0,27.2],[96.6,27.3],[97.1,27.1],[97.4,28.2],
+ [96.6,28.4],[96.2,29.1],[95.3,29.0],[94.3,29.3],[93.2,28.7],[92.5,27.9],[92.1,27.8],[91.6,28.0],[90.4,28.1],
+ [89.6,28.1],[88.9,27.3],[88.8,28.1],[88.2,27.9],[88.0,27.2],[87.0,26.4],[86.0,26.6],[85.0,26.6],[84.6,27.3],
+ [83.9,27.4],[82.7,27.7],[81.9,27.9],[81.0,28.4],[80.1,28.8],[80.4,29.7],[80.1,30.2],[79.0,30.9],[78.7,31.4],
+ [78.4,32.0],[79.1,32.5],[78.7,33.0],[78.9,34.1],[79.5,34.4],[78.0,35.5]
+];
+const MAP_K=13.6, MAP_X0=67.0, MAP_Y0=37.8;
+function mproj(lon,lat){ return [((lon-MAP_X0)*MAP_K*0.94).toFixed(1), ((MAP_Y0-lat)*MAP_K).toFixed(1)]; }
+function indiaMap(rows){
+  const byZone={}; ZN.forEach(z=>byZone[z]={t:0,sites:new Set()});
+  rows.forEach(r=>{ byZone[r.z].t+=VAL(r); if(r.t>0) byZone[r.z].sites.add(r.site); });
+  const maxR=Math.max(1,...ZN.map(z=>byZone[z].t));
+  const d='M'+IN_RING.map(p=>mproj(p[0],p[1]).join(' ')).join(' L')+' Z';
+  const W=((97.6-MAP_X0)*MAP_K*0.94).toFixed(0), H=((MAP_Y0-6.6)*MAP_K).toFixed(0);
+  let bubbles='';
+  ZN.forEach((z,ix)=>{
+    const g=GEO[z], v=byZone[z].t, ns=byZone[z].sites.size;
+    const c=mproj(g.lon,g.lat);
+    const r=v? 13+Math.sqrt(v/maxR)*20 : 9;
+    const on = S.geo.zone===z || S.f.zone===z;
+    const dim = (S.geo.zone && S.geo.zone!==z) || (S.f.zone!=='All' && S.f.zone!==z);
+    bubbles+='<g data-drill="zone:'+z+'" style="cursor:pointer;opacity:'+(dim?0.3:1)+'">'+
+      '<circle cx="'+c[0]+'" cy="'+c[1]+'" r="'+r.toFixed(1)+'" fill="'+C[ix]+'" fill-opacity="'+(on?0.95:0.78)+'" stroke="#fff" stroke-width="'+(on?3:2)+'">'+
+      '<title>'+z+' zone — '+ns+' sites, '+F(v)+' '+metricWord().toLowerCase()+'</title></circle>'+
+      '<text x="'+c[0]+'" y="'+(+c[1]+4)+'" text-anchor="middle" style="fill:#fff;font-size:11px;font-weight:700">'+ns+'</text>'+
+      '<text x="'+c[0]+'" y="'+(+c[1]+r+14).toFixed(1)+'" text-anchor="middle" class="vlab">'+z+'</text></g>';
+  });
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-height:352px" role="img" aria-label="India — reach by Amazon zone">'+
+    '<defs><filter id="mshadow" x="-10%" y="-10%" width="130%" height="130%">'+
+    '<feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0C3D6B" flood-opacity=".18"/></filter></defs>'+
+    '<path d="'+d+'" fill="var(--s2)" stroke="var(--s5)" stroke-width="1.1" stroke-linejoin="round" filter="url(#mshadow)"/>'+
+    bubbles+'</svg>'+
+    '<div style="font-size:10.5px;color:var(--gray-500);text-align:center;margin-top:2px">Bubble area = '+metricWord().toLowerCase()+' · number = BU-Sites reporting · outline generalised from lon/lat, not a survey boundary</div>';
+}
+
+function geoPanel(rows){
+  const g=S.geo;
+  let crumb='<div class="crumb">IN Ops';
+  if(g.zone) crumb+=' &rsaquo; <b>'+g.zone+'</b>';
+  if(g.province) crumb+=' &rsaquo; <b>'+g.province+'</b>';
+  if(g.locality) crumb+=' &rsaquo; <b>'+g.locality+'</b>';
+  crumb+='</div>';
+  function tbl(head,items,drillKind,back){
+    const max=Math.max(1,...items.map(o=>o.v));
+    return crumb+'<div style="font-size:11.5px;color:var(--gray-500);margin-bottom:8px">'+head+
+      (back?' <a href="#" data-drill="'+back+'">&uarr; back</a>':'')+'</div>'+
+      '<table><thead><tr><th>'+drillKind[1]+'</th><th class="num">Sites</th><th class="num">'+metricWord()+'</th><th>Share</th></tr></thead><tbody>'+
+      items.map((o,ix)=>'<tr data-drill="'+drillKind[0]+':'+o.k+'"><td><span class="flag"><i style="background:'+(C[ix%5])+'"></i>'+o.k+'</span></td>'+
+        '<td class="num">'+o.s+'</td><td class="num">'+F(o.v)+'</td>'+
+        '<td><div style="height:10px;background:var(--gray-100);border-radius:3px;width:90px"><i style="display:block;height:100%;border-radius:3px;width:'+((o.v/max)*100)+'%;background:'+(C[ix%5])+'"></i></div></td></tr>').join('')+
+      '</tbody></table>';
+  }
+  const mk=(key)=>group(rows,key).map(o=>({k:o.k,v:o.v,s:distinct(o.rows.filter(r=>r.t>0),r=>r.site).size})).sort((a,b)=>b.v-a.v);
+  if(!g.zone)      return tbl('Select a zone on the map, or a row below.',mk(r=>r.z),['zone','Zone'],null);
+  if(!g.province)  return tbl('Provinces in '+g.zone+' zone.',mk(r=>r.prov),['prov','Province'],'zone:__up');
+  if(!g.locality)  return tbl('Localities in '+g.province+'.',mk(r=>r.loc),['loc','Locality (city)'],'prov:__up');
+  const sites=mk(r=>r.site);
+  return crumb+'<div style="font-size:11.5px;color:var(--gray-500);margin-bottom:8px">BU-Sites in '+g.locality+'. <a href="#" data-drill="loc:__up">&uarr; back</a></div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:6px">'+sites.map(o=>'<span class="pill" style="cursor:pointer;background:var(--blue-50);color:var(--az-blue)" data-drill="site:'+o.k+'">'+o.k+' · '+F(o.v)+'</span>').join('')+'</div>'+
+    '<div class="note">BU-Site is the lowest geography in the iNOPS model. Clicking one opens its submission history — form, surveyor, date, approval state.</div>';
+}
+/* ---------- TAB 2 · THEME OVERVIEW (was Indicator Scorecard) ---------- */
+function themeStats(rows,th){
+  const r=rows.filter(x=>x.pil===th.k);
+  const ids=distinct(r,x=>x.ind);
+  const reporting=distinct(r.filter(x=>x.t>0),x=>x.ind);
+  const v=totV(r), g=totG(r);
+  return {th:th,rows:r,n:ids.size,rep:reporting.size,v:v,g:g,pct:g?v/g:null,
+          bus:distinct(r.filter(x=>x.t>0),x=>x.bu).size,
+          sites:distinct(r.filter(x=>x.t>0),x=>x.site).size,
+          parts:distinct(r.filter(x=>x.t>0),x=>x.pt).size};
+}
+function themeOverview(){
+  const rows=slice();
+  const stats=THEMES.map(th=>themeStats(rows,th)).filter(s=>s.n>0);
+  const grand=totV(rows)||1;
+  if(!stats.length) return emptyBox('No theme has data in this slice','Clear a filter — the framework has 22 indicators across 6 themes.');
+
+  const tiles=stats.map(s=>{
+    const th=s.th;
+    return '<div class="tile" style="border-top-color:'+th.c+'" data-theme="'+th.k+'">'+
+      '<div class="tile-hd"><div class="tile-ic" style="background:color-mix(in srgb,'+th.c+' 14%,#fff);color:'+th.c+'">'+th.ic+'</div>'+
+        '<b>'+th.k+'</b><span class="tile-chip">'+s.n+' indicator'+(s.n>1?'s':'')+'</span></div>'+
+      '<div class="tile-row big"><span>'+metricWord()+'</span><b>'+F(s.v)+'</b></div>'+
+      '<div class="tile-row"><span>% of IN Ops total</span><b>'+PCT1(s.v/grand)+'</b></div>'+
+      '<div class="tile-row"><span>Goal for this period</span><b>'+(s.g?F(s.g):'—')+'</b></div>'+
+      '<div class="tile-prog"><div class="lbl"><span>Achievement</span><span>'+(s.pct==null?'no goal':PCT(s.pct))+'</span></div>'+
+        '<div class="tr"><i style="width:'+Math.min(100,(s.pct||0)*100)+'%;background:'+ragBarColor(s.pct)+'"></i></div></div>'+
+      '<div class="tile-row"><span>BU coverage</span><b>'+s.bus+' of '+BU_LIST.length+'</b></div>'+
+      '<div class="tile-row"><span>Partners reporting</span><b>'+s.parts+'</b></div>'+
+      '<div class="tile-ft"><i class="dot" style="background:'+ragDot(s.pct)+'"></i>'+
+        s.rep+' of '+s.n+' indicators reporting<span class="go">View details &rarr;</span></div>'+
+    '</div>';
+  }).join('');
+
+  const dl=reg('Theme overview '+periodLabel(S.f),
+    ['Theme','Indicators','Indicators reporting','Lives touched','Lives impacted','Goal','% of goal','BU coverage','Partners','Sites'],
+    stats.map(s=>[s.th.k,s.n,s.rep,totT(s.rows),totI(s.rows),s.g,s.g?PCT1(s.v/s.g):'',s.bus,s.parts,s.sites]));
+
+  const totV_=totV(rows), totG_=totG(rows);
+  const head=card('Theme-level reach, goal and coverage',
+    stats.length+' themes · click any tile to open its indicators. Sorted by the framework order — never by value, because the framework order is what leadership reads.',
+    '<div class="tile-grid">'+tiles+'</div>',
+    src('sheet','Amazon_iNOPS_MBR_July2026.xlsx · Page 0 · goals from the CE revised Goal sheet, Jul–Sep ÷ 3'),dl);
+
+  const roll='<div class="note"><b>Rolled up: '+F(totV_)+' against a goal of '+F(totG_)+' ('+PCT(totG_?totV_/totG_:0)+').</b> '+
+    'Charter totals here are computed from the indicator rows. On the full framework that gives a monthly goal of 354,039, where the MBR\'s own Page-0 total row reads 348,307 — a 5,732 difference between the total row and the rows above it, unreconciled in the source sheet and not introduced here.</div>';
+
+  return head+roll;
+}
+
+function themeDetail(key){
+  const th=THEMES.find(t=>t.k===key)||THEMES[0];
+  const rows=slice().filter(r=>r.pil===key);
+  const s=themeStats(slice(),th);
+  const nav='<div class="crumbnav"><button class="backbtn" data-theme="__back">&larr; All themes</button>'+
+    '<div class="crumb" style="margin:0">Theme Overview &rsaquo; <b>'+key+'</b> · '+periodLabel(S.f)+'</div></div>';
+
+  if(!rows.length) return nav+emptyBox('No rows for '+key+' in this slice','This theme has no submission matching the current filters.');
+
+  const recId=reg('Theme '+key+' records',REC_COLS,recRows(rows));
+  const k=rowHead(key,s.rep+' of '+s.n+' indicators reporting · '+s.parts+' partners · '+s.sites+' BU-Sites',recId)+
+    '<div class="kpi-row">'+
+    kpi({key:'th-v|'+key,ico:ICO.users,val:F(s.v),label:metricWord()+' — '+key,delta:PCT(s.pct)+' of goal',dir:s.pct>=1?'up':'down',pct:s.pct})+
+    kpi({key:'th-g|'+key,ico:ICO.target,val:F(s.g),label:'Goal for '+periodLabel(S.f),delta:s.g?F(Math.max(0,s.g-s.v))+' to go':'no goal set',dir:'flat'})+
+    kpi({key:'th-p|'+key,ico:ICO.doc,val:String(s.parts),label:'Partners delivering this theme',delta:s.rep+' of '+s.n+' indicators live',dir:'flat'})+
+    kpi({key:'th-s|'+key,ico:ICO.pin,val:String(s.sites),unit:'/ '+SITE_MASTER,label:'BU-Sites reached by this theme',delta:PCT(s.sites/SITE_MASTER)+' of the site master',dir:'flat',pct:s.sites/SITE_MASTER})+
+  '</div>';
+
+  const ids=[...distinct(rows,r=>r.ind)].sort();
+  const cards=ids.map(id=>{
+    const ind=IND_BY[id], r=rows.filter(x=>x.ind===id);
+    const v=totV(r), g=totG(r), p=g?v/g:null;
+    const bu=group(r,x=>x.bu).sort((a,b)=>b.v-a.v).slice(0,5);
+    const parts=[...distinct(r.filter(x=>x.t>0),x=>x.pt)];
+    /* an indicator with no source form is not "0% of goal" — it is unsourced */
+    const noSrc=ind.st==='unmapped'||ind.st==='outside'||ind.st==='closed';
+    return '<div class="icard" data-drill="ind:'+id+'">'+
+      '<div class="icard-hd"><span class="icard-id">'+id+'</span>'+((g&&!(noSrc&&!v))?ragPill(p):ST_TAG[ind.st])+'</div>'+
+      '<div class="icard-n">'+ind.n+'</div>'+
+      '<div class="icard-big"><b style="color:'+(v?'var(--gray-900)':'var(--gray-400)')+'">'+F(v)+'</b>'+
+        '<span>of '+(g?F(g):'no goal')+'</span></div>'+
+      '<div class="tile-prog" style="margin-top:8px"><div class="tr"><i style="width:'+Math.min(100,(p||0)*100)+'%;background:'+ragBarColor(p)+'"></i></div></div>'+
+      '<div class="icard-mini">'+bu.map(b=>'<div><span>'+b.k+'</span><b>'+F(b.v)+'</b></div>').join('')+'</div>'+
+      '<div class="icard-ft">'+(parts.length?parts.slice(0,2).join(', ')+(parts.length>2?' +'+(parts.length-2):''):ind.form)+
+        '<span class="go">View records &rarr;</span></div>'+
+    '</div>';
+  }).join('');
+
+  const grid=card('Indicators in '+key,
+    'One card per indicator. The bar is achievement against the goal for the selected period; the strip below it is the Business Unit split. Click a card for the rows behind it.',
+    '<div class="icard-grid">'+cards+'</div>',
+    src('sheet','Amazon_iNOPS_MBR_July2026.xlsx · Page 0'),
+    reg('Indicators '+key,['Indicator','Name','Form','Status','Actual','Goal','% of goal','Partners'],
+      ids.map(id=>{const ind=IND_BY[id],r=rows.filter(x=>x.ind===id),v=totV(r),g=totG(r);
+        return [id,ind.n,ind.form,ST_TXT[ind.st],v,g,g?PCT1(v/g):'',[...distinct(r,x=>x.pt)].join('; ')];})));
+
+  const buRows=group(rows,r=>r.bu);
+  const maxBU=Math.max(1,...buRows.map(o=>o.v));
+  const split=card('Business Unit split — '+key,
+    'Unassigned = submissions whose site code is not in the BU dictionary.',
+    buRows.sort((a,b)=>b.v-a.v).map((o,ix)=>hbar(o.k,o.v,maxBU,C[ix%5],F(o.v),'bu:'+o.k)).join(''),
+    src('sheet','Amazon_iNOPS_MBR_July2026.xlsx · Page 0 by Business Unit'),
+    reg('BU split '+key,['Business Unit','Lives touched','Lives impacted','Goal','Records'],buRows.map(o=>[o.k,o.t,o.i,o.g,o.n])));
+
+  const pRows=group(rows,r=>r.pt).sort((a,b)=>b.v-a.v);
+  const maxP=Math.max(1,...pRows.map(o=>o.v));
+  const byPart=card('Partner delivery — '+key,
+    'Who actually filed against this theme in the selected period.',
+    pRows.map((o,ix)=>hbar(o.k,o.v,maxP,o.v?C[ix%5]:'var(--gray-200)',o.v?F(o.v):'no return','partner:'+o.k)).join(''),
+    src('sheet','Amazon_iNOPS_MBR_July2026.xlsx · Partner Goals'),
+    reg('Partner delivery '+key,['Partner','Lives touched','Lives impacted','Goal','Records'],pRows.map(o=>[o.k,o.t,o.i,o.g,o.n])));
+
+  return nav+k+grid+'<div class="grid2">'+split+byPart+'</div>';
+}
+
+/* ---------- TAB 3 · BUSINESS UNITS ---------- */
+function leadBU(){
+  const rows=slice();
+  if(!rows.length) return emptyBox('Nothing reported in this slice','No Business Unit rows match '+periodLabel(S.f)+'.');
+  const buRows=BU_LIST.map(b=>{const o=group(rows.filter(r=>r.bu===b),()=>b)[0]; return o||{k:b,t:0,i:0,v:0,g:0,n:0,rows:[]};});
+  const max=Math.max(1,...buRows.map(o=>Math.max(o.v,o.g)));
+  const contrib=card('Business Unit contribution — '+periodLabel(S.f),
+    'IN Ops = INFC + ATS + UFF + AMZL, plus the sites whose code prefix is not yet in the BU dictionary. Click a bar for that BU.',
+    legend([{k:metricWord(),c:'var(--c1)'},{k:'Goal',c:'var(--gray-700)'}])+
+    buRows.map((o,ix)=>hbar(o.k,o.v,max,o.k==='Unassigned'?'var(--gray-400)':C[ix%5],F(o.v)+(o.g?'  '+PCT(o.v/o.g):''),'bu:'+o.k,o.g?o.g/max:null)).join(''),
+    src('sheet','Amazon_iNOPS_MBR_July2026.xlsx · Page 0, by Business Unit'),
+    reg('Business Units '+periodLabel(S.f),['Business Unit','Lives touched','Lives impacted','Goal','% of goal','Records','Sites'],
+      buRows.map(o=>[o.k,o.t,o.i,o.g,o.g?PCT1(o.v/o.g):'',o.n,distinct(o.rows,r=>r.site).size])));
+
+  const pils=THEMES.map(t=>t.k).filter(k=>rows.some(r=>r.pil===k));
+  const series=BU_LIST.filter(b=>rows.some(r=>r.bu===b)).map((b,ix)=>({
+    name:b,color:b==='Unassigned'?'var(--gray-400)':C[ix%5],
+    data:pils.map(p=>totV(rows.filter(r=>r.bu===b&&r.pil===p)))
+  }));
+  const grouped=card('Pillar &times; Business Unit',
+    'Grouped columns, one group per pillar. Hover a column for the exact figure.',
+    legend(series.map(s=>({k:s.name,c:s.color})))+groupedBars(pils.map(p=>p.split(' ')[0]),series,{h:220,w:560}),
+    src('sheet','Amazon_iNOPS_MBR_July2026.xlsx · Page 0'),
+    reg('Pillar by BU '+periodLabel(S.f),['Pillar'].concat(series.map(s=>s.name)),
+      pils.map((p,pi)=>[p].concat(series.map(s=>s.data[pi])))));
+
+  const zones=ZN.filter(z=>rows.some(r=>r.z===z));
+  const heatCols=pils.slice(0,5);
+  const heatCard=card('Zone &times; pillar — % of goal',
+    'Sequential ramp, one hue light→dark. A dash means no goal is set for that combination. Cell click opens the rows behind it.',
+    '<div style="overflow-x:auto"><table class="heat"><thead><tr><th>Zone</th>'+heatCols.map(h=>'<th class="num">'+h+'</th>').join('')+'</tr></thead><tbody>'+
+    zones.map(z=>'<tr><td><b>'+z+'</b></td>'+heatCols.map(p=>{
+      const r=rows.filter(x=>x.z===z&&x.pil===p);
+      const v=totV(r), g=totG(r);
+      if(!g) return '<td class="hc muted">–</td>';
+      const pctv=Math.round((v/g)*100);
+      const step=SEQ[Math.min(6,Math.floor(pctv/22))];
+      const ink = pctv>=88?'#fff':'var(--gray-800)';
+      return '<td class="hc" style="background:'+step+';color:'+ink+'" data-drill="heat:'+z+'|'+p+'">'+pctv+'%</td>';
+    }).join('')+'</tr>').join('')+'</tbody></table></div>',
+    src('sheet','Computed from Page 0 by zone and pillar'),
+    reg('Zone by pillar '+periodLabel(S.f),['Zone'].concat(heatCols),
+      zones.map(z=>[z].concat(heatCols.map(p=>{const r=rows.filter(x=>x.z===z&&x.pil===p);const g=totG(r);return g?PCT1(totV(r)/g):'';})))));
+
+  const un=buRows.find(o=>o.k==='Unassigned');
+  const note=un&&un.v?'<div class="note warn"><b>'+F(un.v)+' of '+F(totV(rows))+' ('+PCT(un.v/totV(rows))+
+    ') sits in Unassigned.</b> Business Unit is derived from the site-code prefix, not stored on the record, so a site missing from the master counts at IN Ops level but in no BU row. A single site dictionary closes this column permanently.</div>':'';
+
+  return contrib+'<div class="grid2">'+grouped+heatCard+'</div>'+note;
+}
+
+/* ---------- TAB 4 · TREND ---------- */
+function leadTrend(){
+  const f=Object.assign({},S.f,{period:'Full year'});
+  const rows=FACTS.filter(r=>matches(r,f));
+  if(!rows.length) return emptyBox('No trend for this selection','Nothing reported across '+(S.f.fy==='All years'?'any year':S.f.fy)+' on these filters.');
+  const monthsPresent=MON.map((m,i)=>i).filter(i=>rows.some(r=>r.m===i&&r.t>0));
+  const cats=monthsPresent.map(i=>MON[i]);
+  const topInds=group(rows,r=>r.ind).sort((a,b)=>b.v-a.v).slice(0,5).map(o=>o.k);
+  const series=topInds.map((id,ix)=>({name:id+' '+IND_BY[id].n.slice(0,30),color:C[ix%5],
+    data:monthsPresent.map(mi=>totV(rows.filter(r=>r.ind===id&&r.m===mi)))}));
+  const t=card('Monthly trend — '+(S.f.fy==='All years'?'all years combined':S.f.fy),
+    'Time runs left to right, y-axis starts at zero. Direction matters more than level: a line falls when a partner stops reporting, not only when delivery stops. The period filter does not apply to this chart — the whole year is the point.',
+    legend(series.map(s=>({k:s.name,c:s.color})))+lineChart(cats,series,{h:250,w:900}),
+    src('sheet','Apr–Jun as published in the Q2 QBR (17 Jul 2026); July computed from the partner returns'),
+    reg('Trend by indicator',['Indicator'].concat(cats),series.map(s=>[s.name].concat(s.data))));
+
+  const totals=monthsPresent.map(mi=>totV(rows.filter(r=>r.m===mi)));
+  const goals=monthsPresent.map(mi=>totG(rows.filter(r=>r.m===mi)));
+  const vsGoal=card('Total against goal, by month',
+    'Actual column against the month\'s goal column — two measures of the same thing on one scale, never two axes.',
+    legend([{k:metricWord(),c:C[0]},{k:'Goal',c:'var(--gray-400)'}])+
+    groupedBars(cats,[{name:'Actual',color:C[0],data:totals},{name:'Goal',color:'var(--gray-400)',data:goals}],{h:220,w:560}),
+    src('sheet','Amazon_iNOPS_MBR_July2026.xlsx · Trend'),
+    reg('Monthly totals',['Month','Actual','Goal','% of goal'],cats.map((c,i)=>[c,totals[i],goals[i],goals[i]?PCT1(totals[i]/goals[i]):''])));
+
+  const sparks=card('Indicator momentum',
+    'One row per indicator in this slice. The last bar is the most recent month with a return.',
+    group(rows,r=>r.ind).sort((a,b)=>b.v-a.v).slice(0,8).map(o=>{
+      const d=monthsPresent.map(mi=>totV(rows.filter(r=>r.ind===o.k&&r.m===mi)));
+      const mx=Math.max(1,...d);
+      return '<div class="hbar" data-drill="ind:'+o.k+'"><div class="lb"><b>'+o.k+'</b> '+IND_BY[o.k].n.slice(0,20)+'</div>'+
+        '<div style="flex:1"><span class="spark">'+d.map((v,i)=>'<i class="'+(i===d.length-1?'hi':'')+'" style="height:'+Math.max(3,(v/mx)*20)+'px"></i>').join('')+'</span></div>'+
+        '<div class="vl">'+F(d[d.length-1])+'</div></div>';
+    }).join(''),
+    src('sheet','Amazon_iNOPS_MBR_July2026.xlsx · Trend'),
+    reg('Indicator momentum',['Indicator','Name'].concat(cats),
+      group(rows,r=>r.ind).sort((a,b)=>b.v-a.v).map(o=>[o.k,IND_BY[o.k].n].concat(monthsPresent.map(mi=>totV(rows.filter(r=>r.ind===o.k&&r.m===mi)))))));
+
+  return t+'<div class="grid2">'+vsGoal+sparks+'</div>';
+}
+/* ============================================================
+   MODULE 2 + 3 SOURCE — Social Security pillar pack, Apr–Jun 2026.
+   A hand-built Excel pack, not a platform read, so it is filtered on
+   its own dimensions: FY (26-27 only), month (Apr/May/Jun) and partner.
+   ============================================================ */
+const PACK_FY='FY 26-27', PACK_MONTHS=[0,1,2];
+const PACK_PARTNERS=['Read India','SAAD Foundation','Way For Life','Head Held High','Jan Sahas'];
+/* GM/PM column = the three GM/PM partners; HHH and Jan Sahas report directly. */
+const PACK_COLMAP={'GM/PM':['Read India','SAAD Foundation','Way For Life'],'HHH':['Head Held High'],'Jan Sahas':['Jan Sahas']};
+const RECON={
+  'A.3.1':{label:'Lives touched: financial wellbeing awareness',
+    cols:['GM/PM','HHH','Jan Sahas'],
+    rows:{Apr:{'GM/PM':8311,'HHH':7461,'Jan Sahas':4915,p0:20621},
+          May:{'GM/PM':7907,'HHH':7971,'Jan Sahas':4570,p0:20674},
+          Jun:{'GM/PM':12617,'HHH':8310,'Jan Sahas':4711,p0:25950}}},
+  'A.3.2':{label:'Lives impacted: enrolments to social entitlement schemes',
+    cols:['GM/PM','HHH (completed)','Jan Sahas (applications)'],
+    rows:{Apr:{'GM/PM':5411,'HHH (completed)':7336,'Jan Sahas (applications)':12998,p0:17538},
+          May:{'GM/PM':5561,'HHH (completed)':7566,'Jan Sahas (applications)':12397,p0:16408},
+          Jun:{'GM/PM':10350,'HHH (completed)':8604,'Jan Sahas (applications)':12332,p0:19735}}}
+};
+const COL_OWNER={'GM/PM':'GM/PM','HHH':'HHH','Jan Sahas':'Jan Sahas','HHH (completed)':'HHH','Jan Sahas (applications)':'Jan Sahas'};
+const YTD={
+  'A.3.1':[['GM/PM',13856,28835,2.081,59567,0.484],['HHH',26644,23742,0.891,99116,0.2395],['Jan Sahas',12633,14196,1.124,48400,0.2933]],
+  'A.3.2':[['GM/PM',19940,21322,1.069,73019,0.292],['HHH',28286,23506,0.831,94001,0.2501],['Jan Sahas',16433,37727,2.296,58300,0.6471]]
+};
+const MOU_COLS=['Food Security','Menstrual Awareness','Financial Literacy','Enrolment (10% DBT)','Associate Welfare'];
+const MOU=[
+  ['Read India','GM','Ajay Joon',[[295,250],[100,200],[100,300],[0,200],[0,100]],495,1050],
+  ['Read India','GM','Chanchal',[[380,250],[280,200],[0,300],[187,200],[100,100]],947,1050],
+  ['Read India','GM','Jatinder Kaur',[[542,250],[187,200],[0,300],[198,200],[0,100]],927,1050],
+  ['Read India','PM','MR. Ansari',[[303,300],[303,250],[235,300],[0,250],[0,100]],841,1200],
+  ['Read India','PM','Ms. Poonam',[[237,300],[196,250],[285,300],[95,250],[0,100]],813,1200],
+  ['SAAD Foundation','GM','Mehul Makwana',[[410,250],[300,200],[260,300],[210,200],[90,100]],1270,1050],
+  ['SAAD Foundation','PM','Shweta Pawar',[[365,300],[340,250],[290,300],[180,250],[60,100]],1235,1200],
+  ['Way For Life','GM','Amaresh M',[[330,250],[290,200],[240,300],[150,200],[80,100]],1090,1050]
+];
+const SURV=[
+  ['Read India','GM','Ajay Joon',500,5,5,1.00,500,'RED'],
+  ['Read India','GM','Chanchal',887,9,7,0.778,700,'RED'],
+  ['Read India','GM','Giriraj Gujjar',700,7,7,1.00,700,'RED'],
+  ['Read India','GM','Jatin Kumar',800,8,8,1.00,800,'RED'],
+  ['Read India','GM','Jay Singh',1720,18,12,0.667,1200,'RED'],
+  ['Read India','GM','Mohit Prajapati',982,10,6,0.60,600,'RED'],
+  ['Read India','PM','Suman Kakati',1781,18,10,0.556,1000,'RED'],
+  ['Read India','GM','Amulya Jaising',700,10,3,0.30,300,'AMBER'],
+  ['SAAD Foundation','GM','Dhiraj Khairnar',1957,24,5,0.208,500,'AMBER'],
+  ['SAAD Foundation','PM','Harsh Akhade',917,15,3,0.20,300,'AMBER'],
+  ['SAAD Foundation','PM','Rahul Nirbhavane',914,15,3,0.20,300,'AMBER'],
+  ['Read India','GM','Jatinder Kaur',1303,21,1,0.048,100,'LOW'],
+  ['SAAD Foundation','GM','Komal Gaikwad',1310,20,1,0.05,100,'LOW'],
+  ['SAAD Foundation','PM','Vinayak Pundkar',1612,22,1,0.045,100,'LOW'],
+  ['Read India','GM','Yuduvender Awasthi',1317,14,0,0,0,'GREEN'],
+  ['Read India','PM','Sunil Kumar',1607,25,0,0,0,'GREEN'],
+  ['Read India','PM','Suraj Mandal',1607,25,0,0,0,'GREEN'],
+  ['SAAD Foundation','GM','Mehul Makwana',2559,76,0,0,0,'GREEN'],
+  ['SAAD Foundation','GM','Harischandra Dhakne',1979,39,0,0,0,'GREEN'],
+  ['SAAD Foundation','PM','Shweta Pawar',1867,40,0,0,0,'GREEN'],
+  ['SAAD Foundation','PM','Varsha Deogade',2132,46,0,0,0,'GREEN'],
+  ['Way For Life','GM','Vijayalakshmi',1134,50,0,0,0,'GREEN'],
+  ['Way For Life','PM','Bindu DN',1337,47,0,0,0,'GREEN'],
+  ['Way For Life','GM','G. Thejashwini',1297,39,0,0,0,'GREEN']
+];
+const FLAGC={RED:'var(--bad)',AMBER:'var(--warn)',LOW:'var(--c5)',GREEN:'var(--ok)'};
+const DQ=[
+  ['Head Held High','Placeholder Household Number',0.328,'32.8% of household records carry a placeholder. Maharashtra writes "Na" on 96.9% of rows; Telangana writes "0" on 85.2%. Survey Id is unique on all 23,742 rows, so the count stands — traceability to a household does not.','bad'],
+  ['Jan Sahas','DBT share below MoU',0.286,'28.6% of applications are DBT against a 40% MoU commitment — an 11.4 point shortfall.','warn'],
+  ['Cross-partner','No common beneficiary key',null,'27 of 71 sites carry two or more partners and there is no shared beneficiary identifier. Combined totals may contain the same person more than once, and there is currently no way to test it.','bad'],
+  ['Read India','Reporting cap at exactly 100',null,'7 officers report 50%+ of activities at exactly 100 people — the form ceiling, not a counted headcount. 4,500 of the quarter\'s reach comes from those rows.','warn'],
+  ['Jan Sahas','Zero true duplicates',0,'Zero duplicate records across 18,138 applications, on seven separate tests. Strongest record-level integrity of the three partners.','ok'],
+  ['Jan Sahas','Gender-eligibility check',1,'100% correct gender matching on all 5 female-only schemes checked. No eligibility violations found.','ok']
+];
+const GOODP=[
+  ['Read India','Marked June rebound after a softer Apr–May, across both GM and PM roles','Worth understanding what changed operationally so it can be repeated deliberately'],
+  ['Head Held High','7 of 19 surveyors show 0–0.1% Household Number placeholder rate','Ready-made internal training reference for the other surveyors'],
+  ['Head Held High','7 sites show 98–100% application completion rate','Model for the lower-completion sites to learn from'],
+  ['Jan Sahas','97.6% delivery rate — 24,773 benefits from 25,391 applications','Highest of the three; both applications and deliveries ahead of MoU pace']
+];
+
+/* which pack months / columns / officers survive the current filters */
+function packMonths(){ return PACK_MONTHS.filter(m=>monthsOf(S.f.period).indexOf(m)>=0).map(m=>MON[m]); }
+function packColActive(col){
+  const owner=COL_OWNER[col]||col;
+  if(S.f.partner==='All') return true;
+  return (PACK_COLMAP[owner]||[owner]).indexOf(S.f.partner)>=0;
+}
+function packOff(){ return S.f.fy==='All years'||S.f.fy===PACK_FY; }
+function packGuard(){
+  if(!packOff()) return emptyBox('No pillar pack for '+S.f.fy,'The Social Security analytics pack covers Apr–Jun 2026 only. Switch FY back to '+PACK_FY+' — the platform data for earlier years lives on the Leadership module.');
+  if(!packMonths().length) return emptyBox('No pack months in '+S.f.period,'The pack covers April, May and June 2026. Pick one of those months, Q1, or Full year.');
+  return null;
+}
+function qMatch(s){ return !S.f.q || String(s).toLowerCase().indexOf(S.f.q.toLowerCase())>=0; }
+
+/* ============================================================
+   MODULE 2 — PROGRAMME OVERVIEW
+   ============================================================ */
+function renderProg(tab){
+  const g=packGuard(); if(g) return g;
+  if(tab===0) return progRecon();
+  if(tab===1) return progYTD();
+  return progMOU();
+}
+function gapPill(g){
+  if(g==null) return '<span class="pill p-none">—</span>';
+  const p=(g*100).toFixed(1)+'%';
+  if(Math.abs(g)<=0.02) return '<span class="pill p-ok">'+(g>=0?'+':'')+p+' &#10003;</span>';
+  if(Math.abs(g)<=0.15) return '<span class="pill p-warn">'+(g>=0?'+':'')+p+' !</span>';
+  return '<span class="pill p-bad">'+(g>=0?'+':'')+p+' &#9650;</span>';
+}
+function reconData(key){
+  const d=RECON[key], ms=packMonths();
+  const cols=d.cols.filter(packColActive);
+  const rows=ms.map(m=>{
+    const raw=cols.reduce((a,c)=>a+d.rows[m][c],0);
+    /* Page 0 is only comparable when the whole partner set is in view */
+    const p0=(cols.length===d.cols.length)?d.rows[m].p0:null;
+    return {m:m,cells:cols.map(c=>d.rows[m][c]),raw:raw,p0:p0,gap:p0?(raw-p0)/p0:null};
+  });
+  const tot={cells:cols.map(c=>ms.reduce((a,m)=>a+d.rows[m][c],0)),
+             raw:rows.reduce((a,r)=>a+r.raw,0),
+             p0:rows.every(r=>r.p0!=null)?rows.reduce((a,r)=>a+r.p0,0):null};
+  tot.gap=tot.p0?(tot.raw-tot.p0)/tot.p0:null;
+  return {cols:cols,rows:rows,tot:tot,label:d.label};
+}
+function reconTable(D){
+  return '<table><thead><tr><th>Month</th>'+D.cols.map(c=>'<th class="num">'+c+'</th>').join('')+
+    '<th class="num">Raw total</th><th class="num">Page 0</th><th class="num">Gap</th></tr></thead><tbody>'+
+    D.rows.map(r=>'<tr data-drill="recon:'+r.m+'"><td><b>'+r.m+'</b></td>'+
+      r.cells.map(v=>'<td class="num">'+F(v)+'</td>').join('')+
+      '<td class="num"><b>'+F(r.raw)+'</b></td><td class="num">'+(r.p0==null?'<span class="muted">n/a</span>':F(r.p0))+'</td>'+
+      '<td class="num">'+gapPill(r.gap)+'</td></tr>').join('')+
+    '<tr class="totalrow"><td>Total</td>'+D.tot.cells.map(v=>'<td class="num">'+F(v)+'</td>').join('')+
+    '<td class="num">'+F(D.tot.raw)+'</td><td class="num">'+(D.tot.p0==null?'n/a':F(D.tot.p0))+'</td>'+
+    '<td class="num">'+gapPill(D.tot.gap)+'</td></tr></tbody></table>';
+}
+function progRecon(){
+  const A=reconData('A.3.1'), B=reconData('A.3.2');
+  const scope=(S.f.partner==='All'?'all three partners':S.f.partner)+' · '+packMonths().join(', ');
+  const k=rowHead('Reconciliation','Raw partner data against what reached Page 0 · '+scope,
+    reg('Reconciliation '+scope,['Indicator','Month','Raw total','Page 0','Gap %'],
+      [].concat(A.rows.map(r=>['A.3.1',r.m,r.raw,r.p0,r.gap==null?'':PCT1(r.gap)]),
+                B.rows.map(r=>['A.3.2',r.m,r.raw,r.p0,r.gap==null?'':PCT1(r.gap)]))))+
+  '<div class="kpi-row">'+
+    kpi({key:'r31',ico:ICO.check,val:A.tot.gap==null?'n/a':PCT1(A.tot.gap),label:'A.3.1 gap — raw data vs Page 0',delta:'never above 1.2% in a month',dir:'up'})+
+    kpi({key:'r32',ico:ICO.alert,val:B.tot.gap==null?'n/a':'+'+PCT1(B.tot.gap),label:'A.3.2 gap — raw data vs Page 0',delta:'widening every month',dir:'down'})+
+    kpi({key:'raw',ico:ICO.users,val:F(B.tot.raw),label:'A.3.2 raw partner total for this selection',delta:B.tot.p0?'reported: '+F(B.tot.p0):'no comparable Page 0 cut',dir:'flat'})+
+    kpi({key:'part',ico:ICO.doc,val:String(A.cols.length),label:'Partner streams in view',delta:A.cols.map(c=>COL_OWNER[c]).join(' · '),dir:'flat'})+
+  '</div>';
+
+  const c1=card('A.3.1 — '+A.label,'Raw partner data against what was reported to Page 0, by month.',
+    reconTable(A),src('sheet','Social Security Pillar — Executive Summary Apr–Jun 2026 · sheet 1'),
+    reg('A31 reconciliation',['Month'].concat(A.cols,['Raw total','Page 0','Gap %']),
+      A.rows.map(r=>[r.m].concat(r.cells,[r.raw,r.p0,r.gap==null?'':PCT1(r.gap)]))))+
+    (A.tot.p0?'<div class="note"><b>Reconciles.</b> '+F(A.tot.raw)+' raw against '+F(A.tot.p0)+' reported — off by '+PCT1(Math.abs(A.tot.gap))+' and never more than 1.2% in a month. Report as-is.</div>'
+      :'<div class="note warn"><b>Page 0 cannot be compared on a partner filter.</b> Page 0 is published at pillar level only, so the comparison column is suppressed rather than shown against a partial raw total.</div>');
+
+  const c2=card('A.3.2 — '+B.label,'Same comparison. The gap is not noise.',
+    reconTable(B),src('sheet','Social Security Pillar — Executive Summary Apr–Jun 2026 · sheet 1'),
+    reg('A32 reconciliation',['Month'].concat(B.cols,['Raw total','Page 0','Gap %']),
+      B.rows.map(r=>[r.m].concat(r.cells,[r.raw,r.p0,r.gap==null?'':PCT1(r.gap)]))))+
+    (B.tot.p0?'<div class="note bad"><b>Does not reconcile, and it is getting worse.</b> Raw data is '+PCT(B.tot.gap)+' higher than reported, and the gap widens every month — '+
+      B.rows.map(r=>PCT(r.gap)).join(', ')+'. Jan Sahas is the main driver: it contributes on an <i>individuals enrolled</i> basis, where scheme applications (25,391) and benefits delivered (24,773) are materially lower.</div>':'');
+
+  const chart=card('The gap, drawn','Raw total against Page 0, by month. Two measures of the same thing on one scale — never two axes.',
+    legend([{k:'Raw partner data',c:C[0]},{k:'Reported to Page 0',c:C[1]}])+
+    groupedBars(B.rows.map(r=>r.m),[
+      {name:'Raw',color:C[0],data:B.rows.map(r=>r.raw)},
+      {name:'Page 0',color:C[1],data:B.rows.map(r=>r.p0||0)}
+    ],{h:200,w:560}),
+    src('sheet','Social Security Pillar pack · sheet 1'),
+    reg('A32 gap chart',['Month','Raw','Page 0'],B.rows.map(r=>[r.m,r.raw,r.p0])));
+
+  return k+c1+c2+chart;
+}
+function progYTD(){
+  const mk=key=>YTD[key].filter(r=>{
+    if(S.f.partner==='All') return true;
+    return (PACK_COLMAP[r[0]]||[r[0]]).indexOf(S.f.partner)>=0;
+  }).filter(r=>qMatch(r[0]));
+  function ytdTable(rows,key){
+    if(!rows.length) return emptyBox('No partner in view','This partner does not report on '+key+'.');
+    const tot=rows.reduce((a,r)=>[ '' ,a[1]+r[1],a[2]+r[2],0,a[4]+r[4],0],['TOTAL',0,0,0,0,0]);
+    tot[3]=tot[1]?tot[2]/tot[1]:0; tot[5]=tot[4]?tot[2]/tot[4]:0;
+    const all=rows.concat([tot]);
+    return '<table><thead><tr><th>Partner</th><th class="num">Q1 target</th><th class="num">Q1 actual</th><th>Q1 %</th><th class="num">Annual target</th><th>YTD % of annual</th><th>vs 25% pro-rata</th></tr></thead><tbody>'+
+      all.map(r=>{
+        const isTot=r[0]==='TOTAL', delta=r[5]-0.25;
+        return '<tr class="'+(isTot?'totalrow':'')+'" data-drill="ytd:'+r[0]+'"><td><b>'+r[0]+'</b></td>'+
+          '<td class="num">'+F(r[1])+'</td><td class="num">'+F(r[2])+'</td><td>'+ragPill(r[3])+'</td>'+
+          '<td class="num">'+F(r[4])+'</td><td>'+PCT1(r[5])+'</td>'+
+          '<td><span class="pill '+(delta>=0?'p-ok':'p-warn')+'">'+(delta>=0?'+':'')+(delta*100).toFixed(1)+' pts</span></td></tr>';
+      }).join('')+'</tbody></table>';
+  }
+  const a=mk('A.3.1'), b=mk('A.3.2');
+  const c1=card('A.3.1 — YTD against target','Q1 = Apr–Jun 2026. The pro-rata benchmark after one quarter is 25% of the annual target.',
+    ytdTable(a,'A.3.1'),src('sheet','Social Security Pillar pack · sheet "2.YTD vs Target 1"'),
+    reg('A31 YTD',['Partner','Q1 target','Q1 actual','Q1 %','Annual target','YTD % of annual'],a.map(r=>[r[0],r[1],r[2],PCT1(r[3]),r[4],PCT1(r[5])])));
+  const c2=card('A.3.2 — YTD against target','Same basis.',
+    ytdTable(b,'A.3.2'),src('sheet','Social Security Pillar pack · sheet "2.YTD vs Target 1"'),
+    reg('A32 YTD',['Partner','Q1 target','Q1 actual','Q1 %','Annual target','YTD % of annual'],b.map(r=>[r[0],r[1],r[2],PCT1(r[3]),r[4],PCT1(r[5])])));
+
+  const names=a.map(r=>r[0]);
+  const pace=card('Q1 achievement by partner','The rule on each track is the 100%-of-Q1-target line.',
+    names.length?legend([{k:'A.3.1 Lives touched',c:C[0]},{k:'A.3.2 Lives impacted',c:C[2]}])+
+      names.map(p=>{
+        const x=a.find(r=>r[0]===p), y=b.find(r=>r[0]===p);
+        return (x?hbar(p+' · touched',x[3],2.4,C[0],PCT(x[3]),'ytd:'+p,1/2.4):'')+
+               (y?hbar(p+' · impacted',y[3],2.4,C[2],PCT(y[3]),'ytd:'+p,1/2.4):'');
+      }).join(''):emptyBox('No partner in view','Clear the partner filter.'),
+    src('sheet','Social Security Pillar pack · sheet 2'),
+    reg('Q1 achievement',['Partner','A.3.1 Q1 %','A.3.2 Q1 %'],names.map(p=>{
+      const x=a.find(r=>r[0]===p), y=b.find(r=>r[0]===p);
+      return [p,x?PCT1(x[3]):'',y?PCT1(y[3]):''];})));
+
+  const note='<div class="note warn"><b>The pillar total is not a useful management number on its own.</b> Combined, both indicators look comfortable — 126% of the Q1 target on lives touched, 128% on lives impacted. That masks a range from 83% to 230% across the three partners. HHH is the only one behind pace, and only just; read against its own MoU rather than Page 0, HHH is ahead — the gap is between Page 0 targets and the MoU, not between HHH and its commitments.</div>';
+  return '<div class="grid2">'+c1+c2+'</div>'+pace+note;
+}
+function progMOU(){
+  const rows=MOU.filter(r=>(S.f.partner==='All'||r[0]===S.f.partner)&&(qMatch(r[2])||qMatch(r[0])));
+  if(!rows.length) return emptyBox('No officer matches','No GM/PM officer in the pack matches the current partner or search.');
+  const hdr='<tr><th>Partner</th><th>Role</th><th>Officer</th>'+MOU_COLS.map(c=>'<th class="num">'+c+'</th>').join('')+'<th class="num">Total</th><th>Pace</th></tr>';
+  const body=rows.map(r=>{
+    const cells=r[3].map(pair=>{
+      const d=pair[1]?(pair[0]-pair[1])/pair[1]:0;
+      const cls=d>=0?'p-ok':d>=-0.4?'p-warn':'p-bad';
+      return '<td class="num"><span class="pill '+cls+'">'+F(pair[0])+'</span><div style="font-size:10px;color:var(--gray-400)">/'+F(pair[1])+'</div></td>';
+    }).join('');
+    return '<tr data-drill="mou:'+r[2]+'"><td>'+r[0]+'</td><td>'+r[1]+'</td><td><b>'+r[2]+'</b></td>'+cells+
+      '<td class="num"><b>'+F(r[4])+'</b><div style="font-size:10px;color:var(--gray-400)">/'+F(r[5])+'</div></td><td>'+ragPill(r[4]/r[5])+'</td></tr>';
+  }).join('');
+  const t=card('GM/PM monthly performance against MoU target — June 2026',
+    rows.length+' officer'+(rows.length>1?'s':'')+' in view. Each cell is actual over target for that deliverable. Row click opens the officer\'s month.',
+    '<div style="overflow-x:auto"><table><thead>'+hdr+'</thead><tbody>'+body+'</tbody></table></div>',
+    src('sheet','Social Security Pillar pack · sheet 4 "Performance vs MOU"'),
+    reg('Performance vs MoU',['Partner','Role','Officer'].concat(MOU_COLS.flatMap(c=>[c+' actual',c+' target']),['Total actual','Total target','Pace %']),
+      rows.map(r=>[r[0],r[1],r[2]].concat(r[3].flatMap(p=>[p[0],p[1]]),[r[4],r[5],PCT1(r[4]/r[5])]))));
+
+  const dbt=card('Enrolment — DBT share against the 40% MoU commitment','The only deliverable with a contractual ratio attached.',
+    legend([{k:'DBT achieved',c:C[0]},{k:'Shortfall to 40%',c:'var(--gray-300)'}])+
+    '<div class="stackbar" style="margin:14px 0 8px"><i style="width:28.6%;background:'+C[0]+'" data-drill="dbt:achieved"></i><i style="width:11.4%;background:var(--gray-300)" data-drill="dbt:gap"></i><i style="width:60%;background:var(--gray-100)"></i></div>'+
+    '<div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--gray-600)"><span><b>28.6%</b> DBT today</span><span><b>40%</b> MoU commitment</span></div>',
+    src('sheet','Social Security Pillar pack · sheet 4 + Jan Sahas source file'),
+    reg('DBT share',['Measure','Value'],[['DBT achieved','28.6%'],['MoU commitment','40.0%'],['Shortfall','11.4 pts']]))+
+    '<div class="note warn"><b>11.4 point shortfall.</b> Jan Sahas is at 28.6% DBT against a 40% MoU commitment. This is the partner\'s single biggest gap against contract.</div>';
+
+  const cov=MOU_COLS.map((c,i)=>({k:c,v:rows.filter(r=>r[3][i][0]>0).length,c:C[i]}));
+  const covCard=card('Deliverable coverage across officers','How many officers filed anything at all against each deliverable this month.',
+    donut(cov,{center:String(rows.length),sub:'officers'}),
+    src('sheet','Social Security Pillar pack · sheet 4'),
+    reg('Deliverable coverage',['Deliverable','Officers reporting','Officers in view'],cov.map(o=>[o.k,o.v,rows.length])));
+
+  return t+'<div class="grid2">'+dbt+covCard+'</div>';
+}
+/* ============================================================
+   MODULE 3 — PILLAR LEADS OVERVIEW
+   ============================================================ */
+function pillarSwitch(){
+  const ps=['Social Security','Food Security','Livelihood'];
+  const owner={'Social Security':'Gaurav','Food Security':'Ashish','Livelihood':'Tejal'};
+  return '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">'+
+    '<div class="segmented" data-seg="pillar">'+ps.map(p=>'<button class="'+(p===S.pillar?'on':'')+'" data-pillar="'+p+'">'+p+'</button>').join('')+'</div>'+
+    '<span style="font-size:12px;color:var(--gray-500)">Pillar lead: <b style="color:var(--gray-800)">'+owner[S.pillar]+'</b> · row-scoped to the signed-in lead\'s own pillar · <i>ownership unconfirmed against the April MBR Owner column</i></span></div>';
+}
+function renderPill(tab){
+  const head=pillarSwitch();
+  const g=packGuard(); if(g) return head+g;
+  if(S.pillar!=='Social Security')
+    return head+emptyBox(S.pillar+' analytics pack not yet produced',
+      'The Social Security pack (Apr–Jun 2026) is the template. The same three views populate for '+S.pillar+' the moment its pack lands — no layout change required.');
+  if(tab===0) return head+pillSurveyor();
+  if(tab===1) return head+pillNarrative();
+  return head+pillDQ();
+}
+function survRows(){
+  return SURV.filter(r=>(S.f.partner==='All'||r[0]===S.f.partner)&&(qMatch(r[2])||qMatch(r[0])||qMatch(r[1])));
+}
+function pillSurveyor(){
+  const rows=survRows();
+  if(!rows.length) return emptyBox('No officer matches','No surveyor in the pack matches the current partner or search.');
+  const flags=['RED','AMBER','LOW','GREEN'];
+  const counts=flags.map(f=>rows.filter(r=>r[8]===f).length);
+  const SCOLS=['Partner','Role','Officer','People reached','Activities','Times exactly 100','% exactly 100','Reach from those','Flag'];
+  const dl=reg('Surveyor activity',SCOLS,rows.map(r=>[r[0],r[1],r[2],r[3],r[4],r[5],PCT1(r[6]),r[7],r[8]]));
+
+  const k=rowHead('Surveyor activity',rows.length+' officers · Apr–Jun 2026 · '+(S.f.partner==='All'?'all partners':S.f.partner),dl)+
+  '<div class="kpi-row">'+
+    kpi({key:'off',ico:ICO.users,val:String(rows.length),label:'Officers reporting this quarter',delta:'GM '+rows.filter(r=>r[1]==='GM').length+' · PM '+rows.filter(r=>r[1]==='PM').length,dir:'flat'})+
+    kpi({key:'act',ico:ICO.doc,val:F(rows.reduce((a,r)=>a+r[4],0)),label:'Activities reported',delta:'Apr–Jun 2026',dir:'flat'})+
+    kpi({key:'reach',ico:ICO.check,val:F(rows.reduce((a,r)=>a+r[3],0)),label:'People reached by these officers',delta:'raw, before de-duplication',dir:'flat'})+
+    kpi({key:'red',ico:ICO.alert,val:String(counts[0]),label:'Officers flagged RED on the reporting cap',delta:'50%+ of activities at exactly 100',dir:counts[0]?'down':'up',pct:counts[0]/rows.length})+
+  '</div>';
+
+  const dist=card('Reporting-cap integrity — officer distribution',
+    'RED = 50%+ of an officer\'s activities recorded at exactly 100 people. 100 is the highest value anywhere in the quarter, so it is the form\'s ceiling, not a counted headcount.',
+    legend(flags.map((f,i)=>({k:f+' ('+counts[i]+')',c:FLAGC[f]})))+
+    flags.map((f,i)=>hbar(f,counts[i],Math.max(1,...counts),FLAGC[f],counts[i]+' officers','flag:'+f)).join(''),
+    src('sheet','Social Security Pillar pack · sheet 3, pivot 3.1'),
+    reg('Integrity flag distribution',['Flag','Officers'],flags.map((f,i)=>[f,counts[i]])));
+
+  const scatter=card('Activities reported vs people reached',
+    'An officer reporting few activities but high reach is the pattern the cap flag detects.',
+    legend(flags.map(f=>({k:f,c:FLAGC[f]})))+scatterSVG(rows),
+    src('sheet','Social Security Pillar pack · sheet 3, pivot 3.1'),
+    reg('Activities vs reach',['Officer','Partner','Activities','People reached','Flag'],rows.map(r=>[r[2],r[0],r[4],r[3],r[8]])));
+
+  const tbl=card('Officer detail','Sorted by integrity flag, then reach. Row click opens that officer\'s activity list.',
+    '<div style="overflow-x:auto;max-height:420px"><table><thead><tr>'+SCOLS.map(c=>'<th'+(/reach|Activities|100/.test(c)?' class="num"':'')+'>'+c+'</th>').join('')+'</tr></thead><tbody>'+
+    rows.map(r=>'<tr data-drill="surv:'+r[2]+'"><td>'+r[0]+'</td><td>'+r[1]+'</td><td><b>'+r[2]+'</b></td>'+
+      '<td class="num">'+F(r[3])+'</td><td class="num">'+r[4]+'</td><td class="num">'+r[5]+'</td>'+
+      '<td class="num">'+PCT1(r[6])+'</td><td class="num">'+F(r[7])+'</td>'+
+      '<td><span class="flag" style="color:'+FLAGC[r[8]]+'"><i style="background:'+FLAGC[r[8]]+'"></i>'+r[8]+'</span></td></tr>').join('')+
+    '</tbody></table></div>',
+    src('sheet','Social Security Pillar pack · sheet 3'),dl);
+
+  return k+'<div class="grid2">'+dist+scatter+'</div>'+tbl;
+}
+function scatterSVG(rows){
+  const W=520,H=210,PL=48,PB=28,PT=10,PR=10,iw=W-PL-PR,ih=H-PT-PB;
+  const mx=Math.max(1,...rows.map(r=>r[4])), my=niceMax(Math.max(1,...rows.map(r=>r[3])));
+  let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-height:'+H+'px" preserveAspectRatio="xMidYMid meet" role="img">';
+  for(let i=0;i<=4;i++){const y=PT+ih-(ih*i/4);
+    s+='<line class="gridline" x1="'+PL+'" y1="'+y+'" x2="'+(W-PR)+'" y2="'+y+'"/>';
+    s+='<text x="'+(PL-6)+'" y="'+(y+3)+'" text-anchor="end">'+F(Math.round(my*i/4))+'</text>';}
+  rows.forEach(r=>{
+    const x=PL+(r[4]/mx)*iw, y=PT+ih-(r[3]/my)*ih;
+    s+='<circle cx="'+x+'" cy="'+y+'" r="5.5" fill="'+FLAGC[r[8]]+'" fill-opacity=".85" stroke="#fff" stroke-width="1.5"><title>'+r[2]+' ('+r[0]+') — '+r[4]+' activities, '+F(r[3])+' reached</title></circle>';
+  });
+  s+='<line class="axis" x1="'+PL+'" y1="'+(PT+ih)+'" x2="'+(W-PR)+'" y2="'+(PT+ih)+'"/>';
+  s+='<text x="'+(PL+iw/2)+'" y="'+(H-6)+'" text-anchor="middle">Activities reported &rarr;</text></svg>';
+  return s;
+}
+function pillNarrative(){
+  const A=reconData('A.3.1'), B=reconData('A.3.2');
+  const k=rowHead('Narrative vs platform','Partner narrative figures against the platform, '+packMonths().join(', '),
+    reg('Narrative vs platform',['Indicator','Month','Narrative','Platform','Gap %'],
+      [].concat(A.rows.map(r=>['A.3.1',r.m,r.raw,r.p0,r.gap==null?'':PCT1(r.gap)]),
+                B.rows.map(r=>['A.3.2',r.m,r.raw,r.p0,r.gap==null?'':PCT1(r.gap)]))))+
+  '<div class="kpi-row">'+
+    kpi({key:'n1',ico:ICO.doc,val:F(A.tot.raw),label:'Narrative report figure — A.3.1',delta:'partner submissions',dir:'flat'})+
+    kpi({key:'n2',ico:ICO.check,val:A.tot.p0==null?'n/a':F(A.tot.p0),label:'Platform / Page 0 figure — A.3.1',delta:A.tot.gap==null?'not comparable on a partner filter':PCT1(Math.abs(A.tot.gap))+' apart',dir:'up'})+
+    kpi({key:'n3',ico:ICO.doc,val:F(B.tot.raw),label:'Narrative report figure — A.3.2',delta:'partner submissions',dir:'flat'})+
+    kpi({key:'n4',ico:ICO.alert,val:B.tot.p0==null?'n/a':F(B.tot.p0),label:'Platform / Page 0 figure — A.3.2',delta:B.tot.gap==null?'not comparable on a partner filter':PCT1(B.tot.gap)+' apart',dir:'down'})+
+  '</div>';
+
+  const cats=[].concat(A.rows.map(r=>'A.3.1 '+r.m),B.rows.map(r=>'A.3.2 '+r.m));
+  const cmp=card('Narrative report figures vs data on the platform',
+    'The question this view answers: when a partner writes a number in their monthly narrative, does the platform agree? Two measures, one scale.',
+    legend([{k:'Narrative report',c:C[0]},{k:'Platform (Page 0)',c:C[1]}])+
+    groupedBars(cats,[
+      {name:'Narrative',color:C[0],data:[].concat(A.rows.map(r=>r.raw),B.rows.map(r=>r.raw))},
+      {name:'Platform',color:C[1],data:[].concat(A.rows.map(r=>r.p0||0),B.rows.map(r=>r.p0||0))}
+    ],{h:220,w:760}),
+    src('sheet','Social Security Pillar pack · sheet 1 — the same comparison at pillar-lead grain'),
+    reg('Narrative vs platform chart',['Series'].concat(cats),
+      [['Narrative'].concat(A.rows.map(r=>r.raw),B.rows.map(r=>r.raw)),
+       ['Platform'].concat(A.rows.map(r=>r.p0),B.rows.map(r=>r.p0))]));
+
+  const basis=[
+    ['A.3.1','Financial wellbeing awareness',A.tot.raw,A.tot.p0,A.tot.gap,'Reconciles. Nothing to action.'],
+    ['A.3.2','Enrolments to schemes',B.tot.raw,B.tot.p0,B.tot.gap,'Does not reconcile. Jan Sahas reports on an "individuals enrolled" basis; applications (25,391) and benefits delivered (24,773) are materially lower.'],
+    ['A.3.2','— if counted as applications',25391,B.tot.p0,B.tot.p0?(25391-B.tot.p0)/B.tot.p0:null,'Counting rule, not a data error. The basis has to be agreed before the gap can be called.'],
+    ['A.3.2','— if counted as benefits delivered',24773,B.tot.p0,B.tot.p0?(24773-B.tot.p0)/B.tot.p0:null,'Same. Three defensible numbers exist for one indicator.']
+  ];
+  const tbl=card('Where the two disagree, and why',
+    'Each row states the reason. A reconciliation gap is a counting-rule question until proven otherwise.',
+    '<table><thead><tr><th>#</th><th>Basis</th><th class="num">Narrative</th><th class="num">Platform</th><th class="num">Gap</th><th>Reading</th></tr></thead><tbody>'+
+    basis.map(r=>'<tr data-drill="narr:'+r[1]+'"><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td class="num">'+F(r[2])+'</td>'+
+      '<td class="num">'+(r[3]==null?'n/a':F(r[3]))+'</td><td class="num">'+gapPill(r[4])+'</td><td style="white-space:normal">'+r[5]+'</td></tr>').join('')+
+    '</tbody></table>',
+    src('sheet','Social Security Pillar pack · sheets 1 and 4'),
+    reg('Counting basis',['Indicator','Basis','Narrative','Platform','Gap %','Reading'],
+      basis.map(r=>[r[0],r[1],r[2],r[3],r[4]==null?'':PCT1(r[4]),r[5]])));
+
+  return k+cmp+tbl+'<div class="note warn"><b>This is the view that settles an MBR argument.</b> It puts the partner\'s own narrative figure next to the platform figure for the same month and indicator, and names the counting basis behind each. Without it, the monthly conversation is two people quoting different numbers at each other.</div>';
+}
+function pillDQ(){
+  const rows=DQ.filter(r=>(S.f.partner==='All'||r[0]===S.f.partner||r[0]==='Cross-partner')&&(qMatch(r[0])||qMatch(r[1])||qMatch(r[3])));
+  const good=GOODP.filter(r=>(S.f.partner==='All'||r[0]===S.f.partner)&&(qMatch(r[0])||qMatch(r[1])));
+  if(!rows.length&&!good.length) return emptyBox('No data-quality finding matches','Clear the partner filter or the search box.');
+  const dlDQ=reg('Data quality register',['Partner','Finding','Measure','Detail','Severity'],rows.map(r=>[r[0],r[1],r[2]==null?'':PCT1(r[2]),r[3],r[4]]));
+
+  const k=rowHead('Data quality',rows.length+' findings · '+good.length+' good practices · '+(S.f.partner==='All'?'all partners':S.f.partner),dlDQ)+
+  '<div class="kpi-row">'+
+    kpi({key:'d1',ico:ICO.alert,val:'32.8%',label:'HHH household records with a placeholder Household Number',delta:'state convention, not individual error',dir:'down',pct:0.328})+
+    kpi({key:'d2',ico:ICO.target,val:'28.6%',label:'Jan Sahas DBT share against a 40% MoU commitment',delta:'11.4 pts short',dir:'down',pct:0.715})+
+    kpi({key:'d3',ico:ICO.pin,val:'27',unit:'/ 71',label:'Sites carrying two or more partners',delta:'no common beneficiary key',dir:'down'})+
+    kpi({key:'d4',ico:ICO.check,val:'0',label:'True duplicate records, Jan Sahas (18,138 applications)',delta:'seven separate tests',dir:'up',pct:1})+
+  '</div>';
+
+  const tbl=card('Data quality register','Every finding carries its measurement and its consequence. Sorted worst first.',
+    rows.length?'<table><thead><tr><th>Partner</th><th>Finding</th><th class="num">Measure</th><th>Detail</th></tr></thead><tbody>'+
+    rows.map(r=>'<tr data-drill="dq:'+r[1]+'"><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td>'+
+      '<td class="num"><span class="pill '+(r[4]==='ok'?'p-ok':r[4]==='warn'?'p-warn':'p-bad')+'">'+(r[2]==null?'—':PCT(r[2]))+'</span></td>'+
+      '<td style="white-space:normal">'+r[3]+'</td></tr>').join('')+'</tbody></table>':emptyBox('No finding for this partner','Nothing logged against '+S.f.partner+'.'),
+    src('sheet','Social Security Pillar pack · sheets 3, 4 and 7'),dlDQ);
+
+  const geoRows=[['Maharashtra',0.969],['Telangana',0.852],['Karnataka',0.041],['Tamil Nadu',0.028],['Delhi NCR',0.012]];
+  const geo=card('Placeholder Household Number by state',
+    'It is a state convention, not individual error — which means it is fixable with a form rule, not retraining.',
+    legend([{k:'Placeholder rate',c:C[1]}])+
+    geoRows.map(r=>hbar(r[0],r[1],1,r[1]>0.5?'var(--bad)':'var(--c3)',PCT1(r[1]),'dqgeo:'+r[0])).join(''),
+    src('sheet','Social Security Pillar pack · sheet 3'),
+    reg('Placeholder rate by state',['State','Placeholder rate'],geoRows.map(r=>[r[0],PCT1(r[1])])));
+
+  const gp=card('Good practices — what is already working',
+    'The transferable lessons. Each one is a named partner behaviour another partner can copy.',
+    good.length?'<table><thead><tr><th>Partner</th><th>Highlight</th><th>Why it matters</th></tr></thead><tbody>'+
+    good.map(r=>'<tr data-drill="gp:'+r[0]+'"><td><b>'+r[0]+'</b></td><td style="white-space:normal">'+r[1]+'</td>'+
+      '<td style="white-space:normal;color:var(--gray-500)">'+r[2]+'</td></tr>').join('')+'</tbody></table>':emptyBox('None logged for this partner','Good practices are recorded per partner in sheet 5.'),
+    src('sheet','Social Security Pillar pack · sheet 5 "Good Practices"'),
+    reg('Good practices',['Partner','Highlight','Why it matters'],good.map(r=>[r[0],r[1],r[2]])));
+
+  return k+tbl+'<div class="grid2">'+geo+gp+'</div>';
+}
+
+/* ============================================================
+   DRAWER — every drill opens the rows behind the figure
+   ============================================================ */
+const drawer=document.getElementById('drawer'), scrim=document.getElementById('scrim');
+function openDrawer(eyebrow,title,sub,body,dlId,ico){
+  document.getElementById('drawerHd').innerHTML=
+    '<div class="dic">'+(ico||ICO.grid)+'</div>'+
+    '<div><div class="eyebrow">'+eyebrow+'</div><h3>'+title+'</h3><div class="sub">'+sub+'</div></div>'+
+    '<div class="sp"></div>'+dlTool(dlId)+'<button class="drawer-x" id="dx">&#10005;</button>';
+  document.getElementById('drawerBd').innerHTML=body;
+  drawer.classList.add('on'); scrim.classList.add('on');
+  document.getElementById('dx').onclick=closeDrawer;
+}
+function closeDrawer(){ drawer.classList.remove('on'); scrim.classList.remove('on'); closeDlMenu(); }
+scrim.onclick=closeDrawer;
+function panel(title,body,flush){ return '<div class="dpanel"><div class="dpanel-hd">'+title+'</div><div class="dpanel-bd'+(flush?' flush':'')+'">'+body+'</div></div>'; }
+function stats(items){ return '<div class="statgrid">'+items.map(i=>'<div><span>'+i[0]+'</span><b>'+i[1]+'</b></div>').join('')+'</div>'; }
+
+/* rows behind a KPI or a chart element, plus its own download */
+function rowsDrawer(eyebrow,title,rows,extra,ico){
+  const t=totT(rows), i=totI(rows), g=totG(rows);
+  const dl=reg(title,REC_COLS,recRows(rows));
+  const byPart=group(rows,r=>r.pt).sort((a,b)=>b.v-a.v);
+  const body=(extra||'')+
+    panel('Summary',stats([
+      ['Records',F(rows.length)],['Lives touched',F(t)],['Lives impacted',F(i)],
+      ['Goal',g?F(g):'—'],['% of goal',g?PCT(t/g):'—'],
+      ['Partners',String(distinct(rows,r=>r.pt).size)],['BU-Sites',String(distinct(rows,r=>r.site).size)],
+      ['Approved',F(rows.filter(r=>r.appr).length)]
+    ]))+
+    (byPart.length?panel('By partner','<table><thead><tr><th>Partner</th><th class="num">Touched</th><th class="num">Impacted</th><th class="num">Goal</th><th class="num">Records</th></tr></thead><tbody>'+
+      byPart.map(o=>'<tr><td>'+o.k+'</td><td class="num">'+F(o.t)+'</td><td class="num">'+F(o.i)+'</td><td class="num">'+F(o.g)+'</td><td class="num">'+o.n+'</td></tr>').join('')+
+      '</tbody></table>',true):'')+
+    panel('Records',recTable(rows),true);
+  openDrawer(eyebrow,title,periodLabel(S.f)+' · '+(S.f.partner==='All'?'all partners':S.f.partner)+' · '+(S.f.zone==='All'?'all zones':S.f.zone),body,dl,ico);
+}
+function kpiDrawer(key){
+  const rows=slice();
+  const k=key.split('|')[0], arg=key.split('|')[1];
+  if(k==='th-v'||k==='th-g'||k==='th-p'||k==='th-s') return rowsDrawer('THEME',arg,rows.filter(r=>r.pil===arg),null,ICO.grid);
+  if(k==='touched') return rowsDrawer('PORTFOLIO','Lives touched',rows.filter(r=>r.t>0),null,ICO.users);
+  if(k==='impacted') return rowsDrawer('PORTFOLIO','Lives impacted',rows.filter(r=>r.i>0),null,ICO.check);
+  if(k==='sites'){
+    const g=group(rows.filter(r=>r.t>0),r=>r.site);
+    const dl=reg('Sites '+periodLabel(S.f),['BU-Site','Zone','Province','Locality','Lives touched','Records','Partners'],
+      g.map(o=>[o.k,o.rows[0].z,o.rows[0].prov,o.rows[0].loc,o.t,o.n,distinct(o.rows,r=>r.pt).size]));
+    return openDrawer('GEOGRAPHY','BU-Sites reporting',g.length+' of '+SITE_MASTER+' sites · '+periodLabel(S.f),
+      panel('Sites','<div class="dscroll"><table><thead><tr><th>BU-Site</th><th>Zone</th><th>Province</th><th>Locality</th><th class="num">Touched</th><th class="num">Records</th></tr></thead><tbody>'+
+      g.sort((a,b)=>b.t-a.t).map(o=>'<tr><td><b>'+o.k+'</b></td><td>'+o.rows[0].z+'</td><td>'+o.rows[0].prov+'</td><td>'+o.rows[0].loc+'</td>'+
+        '<td class="num">'+F(o.t)+'</td><td class="num">'+o.n+'</td></tr>').join('')+'</tbody></table></div>',true)+
+      '<div class="note">'+(SITE_MASTER-g.length)+' sites in the master filed nothing in this slice. A site with no return and a site reporting zero are different states and are never drawn the same way.</div>',
+      dl,ICO.pin);
+  }
+  if(k==='report'||k==='ontrack'){
+    const g=group(rows,r=>r.ind).sort((a,b)=>a.k<b.k?-1:1);
+    const dl=reg('Indicators '+periodLabel(S.f),['Indicator','Name','Pillar','Status','Actual','Goal','% of goal','Partners'],
+      g.map(o=>[o.k,IND_BY[o.k].n,o.rows[0].pil,ST_TXT[IND_BY[o.k].st],o.v,o.g,o.g?PCT1(o.v/o.g):'',distinct(o.rows,r=>r.pt).size]));
+    return openDrawer('FRAMEWORK',k==='report'?'Indicators with a submission':'Indicators against goal',
+      g.length+' indicators in this slice · '+periodLabel(S.f),
+      panel('Indicators','<div class="dscroll"><table><thead><tr><th>#</th><th>Indicator</th><th class="num">Actual</th><th class="num">Goal</th><th>Status</th></tr></thead><tbody>'+
+      g.map(o=>'<tr data-drill="ind:'+o.k+'"><td><b>'+o.k+'</b></td><td>'+IND_BY[o.k].n+'</td><td class="num">'+F(o.v)+'</td>'+
+        '<td class="num">'+F(o.g)+'</td><td>'+(o.g?ragPill(o.v/o.g):ST_TAG[IND_BY[o.k].st])+'</td></tr>').join('')+
+      '</tbody></table></div>',true),dl,ICO.doc);
+  }
+  /* pack KPIs have no fact rows behind them */
+  return openDrawer('PILLAR PACK','Figure from the Social Security pack',
+    'Apr–Jun 2026 · '+(S.f.partner==='All'?'all partners':S.f.partner),
+    '<div class="note">This figure comes from the hand-built pillar pack, not from a platform table. In the built dashboard it resolves to the partner\'s own submission rows once the pack is replaced by a Script Report reading mGrant directly.</div>',
+    null,ICO.doc);
+}
+function drillDrawer(kind,val){
+  const rows=slice();
+  if(kind==='ind'){
+    const ind=IND_BY[val]; if(!ind) return;
+    const r=rows.filter(x=>x.ind===val);
+    const v=totV(r), g=totG(r);
+    const bu=group(r,x=>x.bu);
+    const extra=panel('Definition','<table><tbody>'+
+      '<tr><td><b>Indicator</b></td><td>'+val+' — '+ind.n+'</td></tr>'+
+      '<tr><td><b>Pillar · charter</b></td><td>'+ind.pil+' · '+CHARTERS[THEMES.find(t=>t.k===ind.pil).ch]+'</td></tr>'+
+      '<tr><td><b>Source form</b></td><td>'+ind.form+'</td></tr>'+
+      '<tr><td><b>Measure</b></td><td>'+(ind.meas==='impacted'?'Lives impacted':'Lives touched')+'</td></tr>'+
+      '<tr><td><b>Mapping status</b></td><td>'+ST_TAG[ind.st]+'</td></tr>'+
+      '<tr><td><b>Actual vs goal</b></td><td>'+F(v)+' of '+F(g)+' · '+(g?ragPill(v/g):'no goal')+'</td></tr>'+
+      '</tbody></table>')+
+      panel('Business Unit split',bu.map((o,ix)=>hbar(o.k,o.v,Math.max(1,...bu.map(x=>x.v)),C[ix%5],F(o.v))).join(''));
+    return rowsDrawer('INDICATOR',val+' · '+ind.n,r,extra,ICO.target);
+  }
+  if(kind==='pillar') return rowsDrawer('PILLAR',val,rows.filter(r=>r.pil===val),null,ICO.grid);
+  if(kind==='bu')     return rowsDrawer('BUSINESS UNIT',val,rows.filter(r=>r.bu===val),null,ICO.grid);
+  if(kind==='partner')return rowsDrawer('PARTNER',val,rows.filter(r=>r.pt===val),null,ICO.users);
+  if(kind==='site')   return rowsDrawer('BU-SITE',val,rows.filter(r=>r.site===val),null,ICO.pin);
+  if(kind==='heat'){
+    const p=val.split('|');
+    return rowsDrawer('ZONE × PILLAR',p[0]+' · '+p[1],rows.filter(r=>r.z===p[0]&&r.pil===p[1]),null,ICO.grid);
+  }
+  if(kind==='surv'){
+    const r=SURV.find(x=>x[2]===val)||[];
+    return openDrawer('SURVEYOR',val,r[0]+' · '+r[1]+' · Apr–Jun 2026',
+      panel('Reporting integrity',stats([['People reached',F(r[3])],['Activities',String(r[4])],
+        ['At exactly 100',r[5]+' of '+r[4]],['% exactly 100',PCT1(r[6])],['Reach from those',F(r[7])],['Flag',r[8]]]))+
+      '<div class="note warn">A RED flag is not an accusation — it says the form let a ceiling value stand in for a count. The fix is a form validation, not a performance conversation.</div>',
+      reg('Surveyor '+val,['Partner','Role','Officer','People reached','Activities','Times exactly 100','% exactly 100','Reach from those','Flag'],
+        [[r[0],r[1],r[2],r[3],r[4],r[5],PCT1(r[6]),r[7],r[8]]]),ICO.users);
+  }
+  if(kind==='mou'){
+    const r=MOU.find(x=>x[2]===val)||[];
+    return openDrawer('OFFICER · MoU',val,r[0]+' · '+r[1]+' · June 2026',
+      panel('Against MoU target','<table><thead><tr><th>Deliverable</th><th class="num">Actual</th><th class="num">Target</th><th>Pace</th></tr></thead><tbody>'+
+      MOU_COLS.map((c,i)=>'<tr><td>'+c+'</td><td class="num">'+F(r[3][i][0])+'</td><td class="num">'+F(r[3][i][1])+'</td>'+
+        '<td>'+ragPill(r[3][i][1]?r[3][i][0]/r[3][i][1]:null)+'</td></tr>').join('')+
+      '<tr class="totalrow"><td>Total</td><td class="num">'+F(r[4])+'</td><td class="num">'+F(r[5])+'</td><td>'+ragPill(r[4]/r[5])+'</td></tr>'+
+      '</tbody></table>',true),
+      reg('MoU '+val,['Deliverable','Actual','Target','Pace %'],
+        MOU_COLS.map((c,i)=>[c,r[3][i][0],r[3][i][1],r[3][i][1]?PCT1(r[3][i][0]/r[3][i][1]):''])),ICO.doc);
+  }
+  const titles={kpi:'Metric',recon:'Reconciliation',ytd:'Partner pace',dbt:'DBT split',dq:'Data quality finding',
+    dqgeo:'Placeholder rate',gp:'Good practice',narr:'Narrative vs platform',flag:'Integrity flag'};
+  openDrawer('DETAIL',(titles[kind]||'Detail')+' — '+val.replace('|',' · '),periodLabel(S.f),
+    '<div class="note">This figure comes from the Social Security pillar pack. In the built dashboard the panel loads the rows behind it, scoped to what the signed-in user\'s own record permissions allow.</div>',null,ICO.doc);
+}
+
+/* ============================================================
+   INTERACTION
+   ============================================================ */
+document.addEventListener('click',function(e){
+  const dlb=e.target.closest('[data-dl]');
+  if(dlb){ e.preventDefault(); e.stopPropagation();
+    if(dlmenu.classList.contains('on')&&dlmenu.dataset.for===dlb.dataset.dl){ closeDlMenu(); }
+    else { dlmenu.dataset.for=dlb.dataset.dl; openDlMenu(dlb,dlb.dataset.dl); }
+    return; }
+  const mi=e.target.closest('#dlmenu button');
+  if(mi){ doDownload(mi.dataset.id,mi.dataset.fmt); closeDlMenu(); return; }
+  closeDlMenu();
+
+  const nav=e.target.closest('.nav-item[data-page]');
+  if(nav){ setPage(nav.dataset.page); return; }
+  const tab=e.target.closest('.tab');
+  if(tab){ setTab(+tab.dataset.i); return; }
+  const th=e.target.closest('[data-theme]');
+  if(th){ S.theme = th.dataset.theme==='__back'?null:th.dataset.theme; render(); return; }
+  const pb=e.target.closest('[data-pillar]');
+  if(pb){ S.pillar=pb.dataset.pillar; S.tab=0; render(); return; }
+  const seg=e.target.closest('.segmented[data-seg]:not([data-seg="pillar"]) button');
+  if(seg){
+    seg.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+    seg.classList.add('on');
+    S.f[seg.parentNode.dataset.seg]=+seg.dataset.v;
+    render(); return;
+  }
+  const d=e.target.closest('[data-drill]');
+  if(!d) return;
+  e.preventDefault();
+  const ix=d.dataset.drill.indexOf(':');
+  const kind=d.dataset.drill.slice(0,ix), val=d.dataset.drill.slice(ix+1);
+  if(kind==='zone'){ if(val==='__up'){S.geo={zone:null,province:null,locality:null};} else {S.geo={zone:val,province:null,locality:null};} render(); return; }
+  if(kind==='prov'){ if(val==='__up'){S.geo.province=null;S.geo.locality=null;} else {S.geo.province=val;S.geo.locality=null;} render(); return; }
+  if(kind==='loc'){ if(val==='__up'){S.geo.locality=null;} else {S.geo.locality=val;} render(); return; }
+  if(kind==='kpi'){ kpiDrawer(val); return; }
+  drillDrawer(kind,val);
+});
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ closeDrawer(); closeDlMenu(); } });
+window.addEventListener('resize',closeDlMenu,true);
+
+/* ---- filters ---- */
+function opt(list,sel){ return list.map(v=>'<option'+(v===sel?' selected':'')+'>'+v+'</option>').join(''); }
+document.getElementById('fFY').innerHTML=opt(['All years'].concat(FY_LIST),DEF.fy);
+document.getElementById('fPeriod').innerHTML=opt(PERIODS,DEF.period);
+document.getElementById('fCharter').innerHTML=opt(['All'].concat(Object.keys(CHARTERS).map(k=>CHARTERS[k])));
+document.getElementById('fPillar').innerHTML=opt(['All'].concat(THEMES.map(t=>t.k)));
+document.getElementById('fBU').innerHTML=opt(['All'].concat(BU_LIST));
+document.getElementById('fZone').innerHTML=opt(['All'].concat(ZN));
+document.getElementById('fPartner').innerHTML=opt(['All'].concat(PARTNERS));
+const FMAP={fFY:'fy',fPeriod:'period',fCharter:'charter',fPillar:'pillar',fBU:'bu',fZone:'zone',fPartner:'partner'};
+Object.keys(FMAP).forEach(id=>document.getElementById(id).addEventListener('change',function(){
+  S.f[FMAP[id]]=this.value;
+  if(FMAP[id]==='zone') S.geo={zone:null,province:null,locality:null};
+  render();
+}));
+let qt=null;
+document.getElementById('fSearch').addEventListener('input',function(){
+  const v=this.value; clearTimeout(qt); qt=setTimeout(function(){ S.f.q=v; render(); },220);
+});
+function syncReset(){
+  let n=0;
+  const active=PAGES[S.page].filters;
+  document.querySelectorAll('.fpill').forEach(function(p){
+    const key=p.dataset.f, s=p.querySelector('select');
+    const isDefault=(S.f[key]===DEF[key]);
+    p.classList.toggle('on', key==='fy'||key==='period'||!isDefault);
+    if(!isDefault && active.indexOf(key)>=0) n++;
+  });
+  if(S.f.approval) n++;
+  if(S.f.metric) n++;
+  if(S.f.q) n++;
+  if(S.geo.zone) n++;
+  const r=document.getElementById('fReset');
+  r.style.display=n?'inline-flex':'none';
+  r.querySelector('.badge').textContent=n;
+}
+document.getElementById('fReset').addEventListener('click',function(){
+  S.f=Object.assign({},DEF);
+  S.geo={zone:null,province:null,locality:null};
+  Object.keys(FMAP).forEach(id=>document.getElementById(id).value=DEF[FMAP[id]]);
+  document.getElementById('fSearch').value='';
+  document.querySelectorAll('.segmented[data-seg]:not([data-seg="pillar"])').forEach(function(sg){
+    sg.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===0));
+  });
+  render();
+});
+
+/* ---- refresh + as-at chrome (mirrors the Vedanta header contract) ---- */
+let refreshedAt=Date.now()-2*60000;
+document.getElementById('gdAsAt').textContent='as at '+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+function syncRefreshed(){
+  const m=Math.max(0,Math.round((Date.now()-refreshedAt)/60000));
+  document.getElementById('gdRefreshedAt').textContent = m<1?'Refreshed just now':m===1?'Refreshed 1 min ago':'Refreshed '+m+' min ago';
+}
+setInterval(syncRefreshed,60000); syncRefreshed();
+document.getElementById('gdRefresh').addEventListener('click',function(){
+  this.classList.add('spin');
+  const self=this;
+  setTimeout(function(){ self.classList.remove('spin'); refreshedAt=Date.now(); syncRefreshed(); },700);
+});
+
+/* ---- boot ---- */
+(function(){
+  const h=location.hash.match(/#\/(\w+)\/(\d+)(?:\/(.+))?/);
+  if(h&&PAGES[h[1]]){ S.page=h[1]; S.tab=+h[2]; if(h[3]) S.theme=decodeURIComponent(h[3]); }
+  ensurePackPeriod();
+  render();
+})();
+</script>
+</body>
+</html>
