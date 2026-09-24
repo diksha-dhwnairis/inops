@@ -946,7 +946,13 @@ function renderTabs(){
   document.getElementById('pgSub').innerHTML=P.sub;
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===S.page));
   document.querySelectorAll('[data-f]').forEach(el=>el.classList.toggle('hide',P.filters.indexOf(el.dataset.f)<0));
-  document.getElementById('fScope').innerHTML=P.scope||'';
+  let scope=P.scope||'';
+  if(S.page==='pill'){
+    const pk=PACKS[S.pillar];
+    scope='Source: <b>'+(pk?pk.file:'Social Security Pillar pack')+'</b> — the '+S.pillar+
+      ' pack, Apr–Jun 2026. Partner and period apply; the pillar switcher below sets the pillar.';
+  }
+  document.getElementById('fScope').innerHTML=scope;
 }
 function render(){
   renderTabs();
@@ -1395,6 +1401,205 @@ const GOODP=[
   ['Jan Sahas','97.6% delivery rate — 24,773 benefits from 25,391 applications','Highest of the three; both applications and deliveries ahead of MoU pace']
 ];
 
+/* ============================================================
+   FOOD SECURITY PILLAR PACK — FS_Q2.xlsx, Apr–Jun 2026.
+   865 raw GM/PM rows plus the SNEHA, UFF and food-donation cuts.
+   Partner names normalised to the dashboard's canonical spelling so
+   the Partner filter reaches them.
+   ============================================================ */
+const FS_PACK={
+  pillar:'Food Security', lead:'Ashish', file:'FS_Q2.xlsx', rawRows:865,
+  partners:['Read India','SAAD Foundation','Way For Life','SNEHA','Akshaya Patra','UFF Pantry Programme'],
+  /* partner | GM | PM | total | % of pillar  (sheet 2) */
+  split:[['SAAD Foundation',7459,6839,14298,0.360],
+         ['Read India',9388,4724,14112,0.355],
+         ['Way For Life',5864,5427,11291,0.284]],
+  /* partner by month (sheet 2) */
+  byMonth:[['Read India',5085,4475,4552],['SAAD Foundation',5780,1652,6866],['Way For Life',3511,2620,5160]],
+  /* partner | role | officer | rows at exactly 100 | total rows | % at cap | Q2 interactions (sheet 4) */
+  cap:[['Read India','GM','Ajay Joon',11,12,0.917,1195],
+       ['Read India','GM','Jatin Kumar',10,10,1.000,1000],
+       ['Read India','GM','Ms. Shivani',10,10,1.000,1000],
+       ['Read India','GM','Chanchal',9,14,0.643,1235],
+       ['Read India','PM','Suman Kakati',5,12,0.417,1093],
+       ['Read India','GM','Jay Singh',5,9,0.556,849],
+       ['Read India','GM','Mohit Prajapati',2,11,0.182,983],
+       ['Read India','PM','Suraj Mandal',2,15,0.133,852],
+       ['SAAD Foundation','PM','Rahul Nirbhavane',2,18,0.111,1122],
+       ['SAAD Foundation','GM','Dhiraj Khairnar',1,18,0.056,1380],
+       ['SAAD Foundation','GM','Komal Gaikwad',1,19,0.053,1043]],
+  /* partner | month | role | active officers | target | actual (sheet 3) */
+  tva:[['Read India','Apr','GM',10,2500,3409],['Read India','Apr','PM',5,1500,1676],
+       ['Read India','May','GM',10,2500,2911],['Read India','May','PM',5,1500,1564],
+       ['Read India','Jun','GM',9,2250,3068],['Read India','Jun','PM',5,1500,1484],
+       ['SAAD Foundation','Apr','GM',6,1500,3001],['SAAD Foundation','Apr','PM',6,1800,2779],
+       ['SAAD Foundation','May','GM',6,1500,1498],['SAAD Foundation','May','PM',2,600,154],
+       ['SAAD Foundation','Jun','GM',5,1250,2960],['SAAD Foundation','Jun','PM',6,1800,3906],
+       ['Way For Life','Apr','GM',8,2000,1884],['Way For Life','Apr','PM',6,1800,1627],
+       ['Way For Life','May','GM',8,2000,1399],['Way For Life','May','PM',6,1800,1221],
+       ['Way For Life','Jun','GM',8,2000,2581],['Way For Life','Jun','PM',6,1800,2579]],
+  tvaTot:[31600,39701],
+  /* site | zone | partner | Apr | May | Jun | Q2 (sheet 2) */
+  sitesTop:[['ATX1','North','Read India',542,523,248,1313],
+            ['DEL5','North','Read India',380,405,450,1235],
+            ['DED4','North','Read India',295,400,500,1195],
+            ['AMD2','West','SAAD Foundation',488,112,534,1134],
+            ['NAGF','West','SAAD Foundation',801,0,295,1096]],
+  sitesBottom:[['(blank site tag)','South','Way For Life',0,0,30,30],
+               ['NCT3','North','Read India',63,0,0,63],
+               ['NCT2','North','Read India',0,85,0,85],
+               ['LKOO','North','Read India',98,0,0,98],
+               ['LKO1','North','Read India',98,0,0,98]],
+  activity:[['Awareness campaigns on nutrition and preventive measures',32489,0.818],
+            ['Awareness generation sessions in schools, anganwadis and SHGs',4094,0.103],
+            ['Working with ASHA and Anganwadi workers on community awareness',1152,0.029],
+            ['Collaboration with local institutions on capacity-building gaps',550,0.014],
+            ['Schools and Anganwadi',500,0.013],
+            ['Schools supported with kitchen-garden inputs',194,0.005]],
+  recon:[
+    {id:'A.1.1',title:'Lives touched: food security awareness',
+     note:'Goal sheet lists 2 partners — GM/PM (43,232) and Akshayapatra (12,822). Akshayapatra filed nothing.',
+     cols:['GM/PM (raw)'],owner:['GM/PM'],goal:56053.5,
+     rows:[['Apr',[14376],14401],['May',[8747],8747],['Jun',[16578],16588]],
+     read:'Reporting is accurate — a 0.1% gap. Q1 achievement is 39,736 against a 56,054 goal (71%), leaving 16,318 to close.',tone:'ok'},
+    {id:'A.1.2',title:'Lives touched: counselling and care support',
+     note:'Goal sheet: SNEHA only, Q1 target 29,540.',
+     cols:['SNEHA (raw)'],owner:['SNEHA'],goal:29540,
+     rows:[['Apr',[1942],5017],['May',[1960],7400],['Jun',[3641],15421]],
+     read:'Page 0 reports 27,838 lives (94% of goal) but SNEHA’s raw file shows only 7,543. Confirm the additional source behind the 20,295 difference.',tone:'bad'},
+    {id:'A.1.3',title:'Lives impacted: ICDS ecosystem strengthening',
+     note:'Goal sheet: SNEHA only, Q1 target 17,550.',
+     cols:['SNEHA (raw)'],owner:['SNEHA'],goal:17550,
+     rows:[['Apr',[3136],2424],['May',[5465],4563],['Jun',[12352],8175]],
+     read:'SNEHA’s raw total is 20,953, exceeding the 17,550 goal by 19%. Page 0 is lower by 5,791 and should be updated after validation.',tone:'warn'},
+    {id:'A.1.5',title:'Lives impacted: pantry + orphan donations',
+     note:'Goal sheet: UFF sites only, Q1 target 184,385.',
+     cols:['UFF sites / G-Meal-C (raw)'],owner:['UFF Pantry Programme'],goal:184385.3,
+     rows:[['Apr',[14937],14937],['May',[12930],12930],['Jun',[15274],15274]],
+     read:'Raw data and Page 0 match exactly at 43,141. Achievement is 23% of the 184,385 goal, so future targets and site capacity need review.',tone:'warn'}
+  ],
+  /* SNEHA MoU output | annual target | Apr | May | Jun (sheet 8) */
+  mou:{partner:'SNEHA',title:'SNEHA (Sehat Project) — MoU outputs vs actual',
+    src:'signed MoU Annexure I §3.2, Apr 2026–Mar 2027 phase. Targets are ANNUAL, so ~25% after one quarter is on pace.',
+    rows:[['Anganwadi workers trained through training sessions',148,0,0,181],
+          ['ASHAs trained through training sessions',118,0,0,198],
+          ['Anganwadis conducting monthly community events',106,26,9,92],
+          ['Anganwadis conducting protocolised anthropometric assessment',127,37,14,93],
+          ['Anganwadis conducting collaborative activities with public health systems',106,25,9,75],
+          ['Pregnant women registered with anganwadis receiving ICDS supplementary nutrition',1250,182,135,110],
+          ['Pregnant women registered with anganwadis referred for antenatal care',1000,73,63,55],
+          ['ICDS registered children receiving supplementary nutrition',4200,620,847,1478],
+          ['Malnourished (wasted) children referred to NRC/VCDC',500,0,4,247],
+          ['Community volunteers trained through training sessions',960,0,0,0]],
+    read:'Two different stories in one partner. The system-capacity lines are already 103–168% of their full-year target after one quarter — either fast execution or coverage-style targets, worth confirming with SNEHA. The beneficiary-facing lines run the other way: antenatal referrals sit at 19.1% of annual after a quarter, and <b>community volunteers trained is exactly zero against a 960 target</b> across all three months. That is the clearest single flag in this pack.'},
+  donation:{title:'Food donation — site-wise, Apr–Jun 2026',
+    rows:[['UBL9','Bengaluru','Karnataka',36,36,0,18000,500],
+          ['PDL5','Gurgaon','Haryana',24,12,12,20808,867],
+          ['UBO6','Mumbai','Maharashtra',2,2,0,417,208.5],
+          ['UPN3','Mumbai','Maharashtra',1,1,0,220,220],
+          ['UAM1','Ahmedabad','Gujarat',5,5,0,3426,685.2]],
+    read:'42,871 beneficiaries through 68 activities. PDL5 and UBL9 carry 90.5% of all beneficiaries; 56 of the 68 activities were grocery distributions.'},
+  dup:{partners:[['SAAD Foundation',54,301,0.179],['Way For Life',48,363,0.132],['Read India',12,201,0.060]],
+       total:[114,865,0.132],
+       rule:'Match rule: officer + site + date + institution. Same-day repeat sessions at one institution would also match, so read the rate, not the count.',
+       oneMonth:[['UBO1','West','SAAD Foundation','June',321],['BOMP','West','SAAD Foundation','June',308],
+                 ['BOM5','West','SAAD Foundation','June',259],['NCRU','North','Read India','Apr',197],
+                 ['MDEA','North','Read India','Apr',100],['LKOO','North','Read India','Apr',98],
+                 ['LKO1','North','Read India','Apr',98],['LKOD','North','Read India','May',98],
+                 ['NCT2','North','Read India','May',85],['NCT3','North','Read India','Apr',63],
+                 ['(blank site tag)','South','Way For Life','June',30]]},
+  dq:[['Read India','Reporting cap at exactly 100',0.917,'11 officers have activity rows reporting exactly 100 interactions; 2 (Jatin Kumar, Ms. Shivani) hit it on 100% of their rows, 1 more (Ajay Joon) on 91.7%. 9 of the 11 flagged officers are Read India.','bad'],
+      ['SAAD Foundation','Duplicate entries',0.179,'84 duplicate groups (same officer + site + date + institution), 114 excess rows out of 865 — 13.2% pillar-wide. SAAD Foundation 17.9%, Way For Life 13.2%, Read India 6.0%.','bad'],
+      ['Way For Life','Total = 0 with a live demographic breakdown',null,'GM Nirosha, site MAA4, 29 May 2026 — the Total field was left at 0 while the demographic columns hold 20 real beneficiaries. A data-entry bug undercounting that activity by 20.','warn'],
+      ['Way For Life','Blank site tag',null,'June, 30 lives logged with no site code at all — cannot be attributed to any location in site-level analysis.','warn'],
+      ['Cross-partner','13 sites report in only 1 of 3 months',null,'Could be genuinely new or closing sites, or inconsistent monthly reporting — not distinguishable from this data alone.','warn'],
+      ['SNEHA','Page 0 is 3.7× the raw file on A.1.2',null,'Page 0 reports 27,838 against SNEHA’s 7,543 raw. Until the extra source is named, the published A.1.2 figure is unverifiable.','bad']],
+  good:null
+};
+
+/* ============================================================
+   LIVELIHOOD PILLAR PACK — LL_arvind.xlsx, Apr–Jun 2026.
+   No officer-level sheet in this pack, so the activity view is
+   site-level. The raw `Access_Training` sheet is deliberately NOT
+   carried in: it holds entrepreneur names, business addresses and
+   contact numbers (SECURITY.md §6 — personal data never leaves the
+   source file into a shared artefact).
+   ============================================================ */
+const LL_PACK={
+  pillar:'Livelihood', lead:'Tejal', file:'LL_arvind.xlsx',
+  partners:['AccessDev','GAME','RTP','BuzzWomen','She & We','Pinkishe','Read India','SAAD Foundation','Way For Life'],
+  /* partner | sites | sites with a zero-activity month | share (GM&PM sheet) */
+  siteHealth:[['SAAD Foundation',23,12,0.52],['Read India',24,5,0.21],['Way For Life',18,0,0.00]],
+  /* GM/PM site detail: site | zone | state | Apr | May | Jun | Q2 */
+  gmpmSites:[['DELU','North','Haryana',400,300,600,1300],['GAUA','North','West Bengal',303,384,501,1188],
+             ['DEL5','North','Haryana',280,500,265,1045],['DELT','North','Delhi',196,393,374,963],
+             ['DED4','North','Haryana',100,200,480,780],['DEL4','North','Haryana',261,194,300,755],
+             ['MJAX','North','Rajasthan',321,140,155,616],['NCT3','North','Haryana',182,243,188,613],
+             ['DEL2','North','Haryana',100,300,200,600],['ATX1','North','Punjab',187,140,271,598],
+             ['CCT1','North','Assam',161,197,200,558],['DELN','North','Delhi',155,173,187,515],
+             ['BBID','North','Odisha',147,101,186,434],['MDEA','North','Haryana',200,0,200,400]],
+  /* She&We site detail — the A.2.3 delivery partner */
+  swSites:[['DEL5','North','Haryana',3120,1830,1880,6830],['LKO1','North','Uttar Pradesh',2000,1220,1340,4560],
+           ['BLR5','South','Karnataka',2100,980,950,4030],['AMD2','West','Gujarat',1950,950,925,3825],
+           ['DED3','North','Haryana',1770,980,975,3725],['NCT2','North','Haryana',1650,980,990,3620],
+           ['BRL8','South','Karnataka',1830,840,940,3610],['DEL4','North','Haryana',1850,980,760,3590],
+           ['BRLG','South','Karnataka',1850,839,900,3589],['HYT2','South','Andhra Pradesh',1820,854,910,3584],
+           ['HYD8','South','Andhra Pradesh',1900,838,840,3578],['BRL7','South','Karnataka',1630,910,970,3510],
+           ['LKOO','North','Uttar Pradesh',1650,870,980,3500],['BLRH','South','Karnataka',1600,940,830,3370],
+           ['LKOD','North','Uttar Pradesh',1630,780,720,3130],['DEL2','North','Haryana',1410,850,820,3080],
+           ['DELT','North','Delhi',1450,860,660,2970]],
+  recon:[
+    {id:'A.2.1',title:'Lives touched: livelihood awareness campaigns',
+     note:'Four delivery partners. Buzz Women filed in April only.',
+     cols:['Access (raw)','GAME (raw)','RTP (raw)','Buzz Women (raw)'],
+     owner:['AccessDev','GAME','RTP','BuzzWomen'],goal:null,
+     rows:[['Apr',[1865,251,94,108],2832],['May',[1788,487,124,0],2436],['Jun',[2945,514,299,0],1848]],
+     read:'April and May under-report against Page 0; June runs 103% <i>over</i> it. A swing that large in one direction then the other is a mapping problem, not delivery — the June Page 0 figure of 1,848 against 3,758 raw needs resolving before the quarter is signed off.',tone:'bad'},
+    {id:'A.2.2',title:'Lives impacted: skill development and enterprise promotion',
+     note:'Access counts Enterprise Impact, RTP counts Onboarded, GAME counts EDP.',
+     cols:['Access — Enterprise Impact','RTP — Onboarded','GAME — EDP'],
+     owner:['AccessDev','RTP','GAME'],goal:null,
+     rows:[['Apr',[760,64,541],647],['May',[372,85,487],487],['Jun',[369,215,0],1053]],
+     read:'Raw is 32% above Page 0 for the quarter, and each partner counts a different unit — enterprises, onboardings and EDP graduates are being added together. The counting basis has to be agreed before the gap means anything.',tone:'warn'},
+    {id:'A.2.3',title:'Lives touched: promotion of menstrual hygiene practices',
+     note:'Three sources: the GM/PM cadre, She & We and Pinkishe.',
+     cols:['GM/PM (raw)','She & We (raw)','Pinkishe (raw)'],
+     owner:['GM/PM','She & We','Pinkishe'],goal:null,
+     rows:[['Apr',[9994,31210,18307],59511],['May',[7987,16501,12161],36649],['Jun',[14598,16390,8002],40546]],
+     read:'The cleanest reconciliation in either pack. April and May match Page 0 to the exact unit; June is 4% short, the same reporting-lag pattern already flagged for Pinkishe. Report as-is.',tone:'ok'}
+  ],
+  mouA:{partner:'AccessDev',title:'Amazon EE Grant — ACCESS MoU performance',
+    src:'Grant Agreement + ACCESS programme data · Cohort 2 (Oct 2025 – Sep 2026) · 9 of 12 months complete (75%)',
+    head:'Output delivery is 70–80% of the expected pace, while registration and digital payments remain well below target.',
+    outputs:[['New enterprises promoted',400,300,210],['Existing enterprises supported',400,300,241],
+             ['Entrepreneurs engaged',800,600,451]],
+    outcomes:[['Formal registration (PAN / Udyam)',0.50,0.2661],['Digital transaction / payment adoption',0.80,0.2928],
+              ['Book-keeping practice adopted',null,0.4590],['Bank linkage',null,0.7007],
+              ['Social media adoption for business',null,0.0421],['E-commerce linkage',null,0]],
+    sites:[['BOM5',22,0,0.9091,0.0455,'No formal registrations'],
+           ['BOML',49,0.1429,1,0.2449,'No major flag'],
+           ['DEL5',143,0.3636,0.2098,0.042,'Lowest book-keeping rate (21%)'],
+           ['LKO1',135,0.1259,0.6222,0,'No social media adoption'],
+           ['LKOO',102,0.4314,0.2353,0,'No social media adoption']],
+    read:'Formal registration is 23.4 points below target, digital payments 50.7 points below, and <b>no entrepreneur is linked to e-commerce at all</b> against an Amazon support commitment. Two measures cannot be tested from this workbook: revenue growth has no baseline, and the 6,598 attendance records carry no unique participant roster.'},
+  dupTests:[['Awareness (BuddhiMoney Centre)',79,1828,'Same participant, same date, same site'],
+            ['Enterprise Impact',5,451,'Same entrepreneur and business repeated'],
+            ['Training Impact',60,1050,'Same participant, same training, same date']],
+  flagged:[['Faridabad','GAME','A.2.1','Zero activity all 3 months of Q2','High','Total non-reporter, not a low performer — needs direct confirmation of site status'],
+           ['DEL5','Read India (GM/PM)','A.2.3','Zero activity in June only','Medium','Single-month gap, not chronic — other months normal'],
+           ['DEL5','AccessDev','A.2.1','Weakest of the four Access awareness sites','Low','Consistently lowest volume of BOM5 / LKOO / LKO1 / DEL5, not zero'],
+           ['5 Read India GM officers','Read India','A.2.3','Exactly 100 activities reported','Medium','Apparent reporting cap — likely under-counted activity, a tool constraint rather than non-performance']],
+  dq:[['AccessDev','65 duplicate row-groups in the Awareness file',0.043,'Same name + date + site signature. Some are likely genuine repeat visits, some data-entry duplicates. Ask Access to confirm which.','warn'],
+      ['GAME','Faridabad reports zero for the full quarter',null,'A total non-reporter across all three months, not a low performer. Confirm with GAME whether the site is inactive or simply not reporting.','bad'],
+      ['Read India','5 GM officers report exactly 100 activities',null,'The apparent reporting cap. Ask GM/PM whether a 100-unit ceiling exists in the tool and whether true totals are being truncated.','warn'],
+      ['She & We','100% "yes" on a self-reported behaviour-change question',1,'A credibility flag for social-desirability bias rather than a data error. Recommend a validated or indirect measure for future rounds.','warn'],
+      ['Read India','DEL5 shows zero reported activity in June',null,'A single-month gap, not a chronic non-reporter. Confirm whether June was a genuine pause or a reporting gap.','warn']],
+  good:[['She & We','A.2.3 reconciled to the exact unit for 2 of 3 months','April and May combined totals across GM/PM, She & We and Pinkishe matched Page 0 exactly — proof that clean three-source reconciliation is achievable, not just an aspiration'],
+        ['AccessDev','Data structure supports real deduplication','Enterprise Impact and Training Impact both carry entrepreneur and business name, enabling genuine unique-beneficiary counts rather than row counts — a structure no other source in this pillar has'],
+        ['Pinkishe','Word MBR reports match the Excel tracker exactly, every month','Three months cross-validated, every figure matched — the strongest internal-consistency result of any partner checked this session']]
+};
+const PACKS={'Social Security':null,'Food Security':FS_PACK,'Livelihood':LL_PACK};
+
 /* which pack months / columns / officers survive the current filters */
 function packMonths(){ return PACK_MONTHS.filter(m=>monthsOf(S.f.period).indexOf(m)>=0).map(m=>MON[m]); }
 function packColActive(col){
@@ -1583,12 +1788,370 @@ function pillarSwitch(){
 function renderPill(tab){
   const head=pillarSwitch();
   const g=packGuard(); if(g) return head+g;
-  if(S.pillar!=='Social Security')
-    return head+emptyBox(S.pillar+' analytics pack not yet produced',
-      'The Social Security pack (Apr–Jun 2026) is the template. The same three views populate for '+S.pillar+' the moment its pack lands — no layout change required.');
-  if(tab===0) return head+pillSurveyor();
-  if(tab===1) return head+pillNarrative();
-  return head+pillDQ();
+  if(S.pillar==='Social Security')
+    return head+(tab===0?pillSurveyor():tab===1?pillNarrative():pillDQ());
+  const P=PACKS[S.pillar];
+  if(!P) return head+emptyBox(S.pillar+' analytics pack not yet produced',
+      'The Social Security pack (Apr–Jun 2026) is the template. The same three views populate the moment its pack lands — no layout change required.');
+  if(tab===0) return head+packActivity(P);
+  if(tab===1) return head+packNarrative(P);
+  return head+packDQ(P);
+}
+
+/* ---------- shared pack helpers ---------- */
+function monSel(){ return packMonths(); }
+function ownerActive(owner){
+  if(S.f.partner==='All') return true;
+  return (PACK_COLMAP[owner]||[owner]).indexOf(S.f.partner)>=0;
+}
+function partnerRows(rows,ix){ return rows.filter(r=>(S.f.partner==='All'||r[ix]===S.f.partner)&&(qMatch(r.join(' ')))); }
+function monCols(){ const ms=monSel(); return ['Apr','May','Jun'].filter(m=>ms.indexOf(m)>=0); }
+function monIdx(){ const ms=monSel(); return ['Apr','May','Jun'].map((m,i)=>ms.indexOf(m)>=0?i:-1).filter(i=>i>=0); }
+function scopeLine(P){
+  return (S.f.partner==='All'?'all partners':S.f.partner)+' · '+(monSel().join(', ')||'no month')+' 2026 · '+P.file;
+}
+
+/* ---------- reconciliation card, shared by both packs ---------- */
+function reconCard(r,P){
+  const ms=monSel();
+  const keep=r.cols.map((c,i)=>i).filter(i=>ownerActive(r.owner[i]));
+  const rows=r.rows.filter(x=>ms.indexOf(x[0])>=0);
+  if(!keep.length) return card(r.id+' — '+r.title,r.note,
+    emptyBox('No delivery partner in view','Neither '+r.owner.join(' nor ')+' matches the partner filter.'),
+    src('sheet',P.file+' · sheet 1 Monthly Reconciliation'));
+  const full=keep.length===r.cols.length;
+  const body=rows.map(x=>{
+    const cells=keep.map(i=>x[1][i]);
+    const raw=cells.reduce((a,b)=>a+b,0);
+    const p0=full?x[2]:null;
+    return {m:x[0],cells:cells,raw:raw,p0:p0,gap:p0?(raw-p0)/p0:null};
+  });
+  const tRaw=body.reduce((a,b)=>a+b.raw,0);
+  const tP0=full?body.reduce((a,b)=>a+(b.p0||0),0):null;
+  const tGap=tP0?(tRaw-tP0)/tP0:null;
+  const tbl='<table><thead><tr><th>Month</th>'+keep.map(i=>'<th class="num">'+r.cols[i]+'</th>').join('')+
+    '<th class="num">Raw total</th><th class="num">Page 0</th><th class="num">Gap</th></tr></thead><tbody>'+
+    body.map(b=>'<tr data-drill="recon:'+r.id+' '+b.m+'"><td><b>'+b.m+'</b></td>'+
+      b.cells.map(v=>'<td class="num">'+F(v)+'</td>').join('')+
+      '<td class="num"><b>'+F(b.raw)+'</b></td><td class="num">'+(b.p0==null?'<span class="muted">n/a</span>':F(b.p0))+'</td>'+
+      '<td class="num">'+gapPill(b.gap)+'</td></tr>').join('')+
+    '<tr class="totalrow"><td>Total</td>'+keep.map((i,k)=>'<td class="num">'+F(body.reduce((a,b)=>a+b.cells[k],0))+'</td>').join('')+
+    '<td class="num">'+F(tRaw)+'</td><td class="num">'+(tP0==null?'n/a':F(tP0))+'</td><td class="num">'+gapPill(tGap)+'</td></tr>'+
+    '</tbody></table>'+
+    (r.goal?'<div style="margin-top:10px">'+hbar('Q1 goal '+F(r.goal),tP0||tRaw,Math.max(r.goal,tP0||tRaw),
+        ragBarColor((tP0||tRaw)/r.goal),F(tP0||tRaw)+'  '+PCT((tP0||tRaw)/r.goal),null,
+        r.goal/Math.max(r.goal,tP0||tRaw))+'</div>':'');
+  const dl=reg(P.pillar+' '+r.id+' reconciliation',['Month'].concat(keep.map(i=>r.cols[i]),['Raw total','Page 0','Gap %']),
+    body.map(b=>[b.m].concat(b.cells,[b.raw,b.p0,b.gap==null?'':PCT1(b.gap)])));
+  return card(r.id+' — '+r.title,r.note,tbl,src('sheet',P.file+' · sheet 1 Monthly Reconciliation'),dl)+
+    (full?'<div class="note '+(r.tone==='bad'?'bad':r.tone==='warn'?'warn':'')+'">'+r.read+'</div>'
+        :'<div class="note warn"><b>Page 0 is published at indicator level, not per partner.</b> The comparison column is suppressed on a partner filter rather than shown against a partial raw total.</div>');
+}
+
+/* ---------- TAB 1 · activity (officer-level where the pack has it, else site-level) ---------- */
+function packActivity(P){
+  if(P.cap) return fsActivity(P);
+  return llActivity(P);
+}
+function fsActivity(P){
+  const cap=partnerRows(P.cap,0), split=partnerRows(P.split,0);
+  const tva=P.tva.filter(r=>(S.f.partner==='All'||r[0]===S.f.partner)&&monSel().indexOf(r[1])>=0);
+  if(!cap.length&&!tva.length) return emptyBox('No officer in view','No GM/PM officer in '+P.file+' matches the current partner or search.');
+  const capped=cap.filter(r=>r[5]>=0.5).length;
+  const tgt=tva.reduce((a,r)=>a+r[4],0), act=tva.reduce((a,r)=>a+r[5],0);
+  const dl=reg('Food Security officer cap',['Partner','Role','Officer','Rows at exactly 100','Total rows','% at cap','Q2 interactions'],
+    cap.map(r=>[r[0],r[1],r[2],r[3],r[4],PCT1(r[5]),r[6]]));
+
+  const k=rowHead('GM/PM activity',scopeLine(P)+' · '+P.rawRows+' raw rows',dl)+
+  '<div class="kpi-row">'+
+    kpi({key:'fs-off',ico:ICO.users,val:String(cap.length),label:'Officers with a capped row in the quarter',delta:'GM '+cap.filter(r=>r[1]==='GM').length+' · PM '+cap.filter(r=>r[1]==='PM').length,dir:'flat'})+
+    kpi({key:'fs-cap',ico:ICO.alert,val:String(capped),label:'Officers at 50%+ of rows recorded at exactly 100',delta:'the form ceiling, not a headcount',dir:'down',pct:cap.length?capped/cap.length:null})+
+    kpi({key:'fs-act',ico:ICO.check,val:F(act),label:'Interactions against an officer-based target of '+F(tgt),delta:tgt?PCT1((act-tgt)/tgt)+' vs target':'—',dir:act>=tgt?'up':'down',pct:tgt?act/tgt:null})+
+    kpi({key:'fs-dup',ico:ICO.doc,val:PCT1(P.dup.total[2]),label:'Rows that match the duplicate signature',delta:P.dup.total[0]+' excess of '+F(P.dup.total[1]),dir:'down',pct:P.dup.total[2]})+
+  '</div>';
+
+  const capCard=card('Reporting-cap compliance — officer detail',
+    'Rows recorded at exactly 100 interactions. 100 is the ceiling the form allows, so a high share means the true count is unknown, not that the officer reached exactly 100 people.',
+    '<div style="overflow-x:auto;max-height:340px"><table><thead><tr><th>Partner</th><th>Role</th><th>Officer</th><th class="num">Rows at 100</th><th class="num">Total rows</th><th class="num">% at cap</th><th class="num">Q2 interactions</th></tr></thead><tbody>'+
+    cap.map(r=>'<tr data-drill="fsoff:'+r[2]+'"><td>'+r[0]+'</td><td>'+r[1]+'</td><td><b>'+r[2]+'</b></td>'+
+      '<td class="num">'+r[3]+'</td><td class="num">'+r[4]+'</td>'+
+      '<td class="num"><span class="pill '+(r[5]>=0.9?'p-bad':r[5]>=0.5?'p-warn':'p-none')+'">'+PCT1(r[5])+'</span></td>'+
+      '<td class="num">'+F(r[6])+'</td></tr>').join('')+'</tbody></table></div>',
+    src('sheet',P.file+' · sheet 4 Reporting Cap Compliance'),dl);
+
+  const maxS=Math.max(1,...split.map(r=>r[3]));
+  const splitCard=card('Partner and role split',
+    'GM and PM contribution to the pillar. Click a bar for that partner.',
+    legend([{k:'GM',c:C[0]},{k:'PM',c:C[2]}])+
+    split.map(r=>'<div class="hbar" data-drill="partner:'+r[0]+'"><div class="lb">'+r[0]+'</div>'+
+      '<div class="tr" style="display:flex;background:var(--gray-100)">'+
+      '<i style="width:'+(r[1]/maxS*100)+'%;background:'+C[0]+'"></i><i style="width:'+(r[2]/maxS*100)+'%;background:'+C[2]+'"></i></div>'+
+      '<div class="vl">'+F(r[3])+'  '+PCT(r[4])+'</div></div>').join(''),
+    src('sheet',P.file+' · sheet 2 GM&PM Deep Dive'),
+    reg('Food Security partner split',['Partner','GM','PM','Total','% of pillar'],split.map(r=>[r[0],r[1],r[2],r[3],PCT1(r[4])])));
+
+  const mi=monIdx(), mc=monCols();
+  const bym=partnerRows(P.byMonth,0);
+  const monthCard=card('Partner by month',
+    'Grouped columns, one group per month.',
+    legend(bym.map((r,i)=>({k:r[0],c:C[i%5]})))+
+    groupedBars(mc,bym.map((r,i)=>({name:r[0],color:C[i%5],data:mi.map(j=>r[j+1])})),{h:200,w:520}),
+    src('sheet',P.file+' · sheet 2'),
+    reg('Food Security by month',['Partner'].concat(mc),bym.map(r=>[r[0]].concat(mi.map(j=>r[j+1])))));
+
+  const tvaCard=card('Target vs achievement — officer-based target',
+    'Target = active officers × the per-officer monthly commitment. Rows are partner × month × role.',
+    '<div style="overflow-x:auto;max-height:320px"><table><thead><tr><th>Partner</th><th>Month</th><th>Role</th><th class="num">Active officers</th><th class="num">Target</th><th class="num">Actual</th><th>Achievement</th></tr></thead><tbody>'+
+    tva.map(r=>'<tr data-drill="partner:'+r[0]+'"><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td>'+
+      '<td class="num">'+r[3]+'</td><td class="num">'+F(r[4])+'</td><td class="num">'+F(r[5])+'</td>'+
+      '<td>'+ragPill(r[5]/r[4])+'</td></tr>').join('')+
+    '<tr class="totalrow"><td colspan="4">Total</td><td class="num">'+F(tgt)+'</td><td class="num">'+F(act)+'</td><td>'+ragPill(tgt?act/tgt:null)+'</td></tr>'+
+    '</tbody></table></div>',
+    src('sheet',P.file+' · sheet 3 Target vs Achievement'),
+    reg('Food Security target vs achievement',['Partner','Month','Role','Active officers','Target','Actual','Delta %'],
+      tva.map(r=>[r[0],r[1],r[2],r[3],r[4],r[5],PCT1((r[5]-r[4])/r[4])])))+
+    '<div class="note warn"><b>The one real exception is SAAD Foundation PM in May</b> — 154 against a target of 600, on 2 active officers where the other months carry 6. Overall the pillar is 25.6% above the officer-based target, which is itself worth questioning: a target derived from headcount is not a target derived from need.</div>';
+
+  const allSites=P.sitesTop.concat(P.sitesBottom).filter(r=>S.f.partner==='All'||r[2]===S.f.partner);
+  const maxSite=Math.max(1,...allSites.map(r=>r[6]));
+  const siteCard=card('Site level — top and bottom five by Q2 total',
+    'Four of the five lowest sites were active in only one month, and one Way For Life record carries no site tag at all.',
+    allSites.map(r=>hbar(r[0]+' · '+r[1],r[6],maxSite,r[6]>=500?C[0]:'var(--warn)',F(r[6])+'  '+r[2],'site:'+r[0])).join(''),
+    src('sheet',P.file+' · sheet 2'),
+    reg('Food Security sites',['Site','Zone','Partner','Apr','May','Jun','Q2 total'],allSites));
+
+  const actCard=card('By activity type — one activity dominates',
+    'Nutrition awareness campaigns carry 81.8% of the pillar, so pillar performance is effectively one activity\'s performance.',
+    P.activity.map((r,i)=>hbar(r[0].slice(0,46),r[1],P.activity[0][1],C[i%5],F(r[1])+'  '+PCT1(r[2]),'act:'+r[0])).join(''),
+    src('sheet',P.file+' · sheet 2'),
+    reg('Food Security activity types',['Activity type','Total','% of pillar'],P.activity.map(r=>[r[0],r[1],PCT1(r[2])])));
+
+  return k+capCard+'<div class="grid2">'+splitCard+monthCard+'</div>'+tvaCard+'<div class="grid2">'+siteCard+actCard+'</div>';
+}
+function llActivity(P){
+  const health=partnerRows(P.siteHealth,0);
+  const mi=monIdx(), mc=monCols();
+  if(!health.length) return emptyBox('No partner in view','No GM/PM partner in '+P.file+' matches the current filter.');
+  const sites=health.reduce((a,r)=>a+r[1],0), zero=health.reduce((a,r)=>a+r[2],0);
+  const q=(rows)=>rows.map(r=>mi.reduce((a,j)=>a+r[3+j],0));
+  const gm=P.gmpmSites, sw=P.swSites;
+  const gmQ=q(gm), swQ=q(sw);
+  const dl=reg('Livelihood site health',['Partner','Sites','Sites with a zero-activity month','Share'],
+    health.map(r=>[r[0],r[1],r[2],PCT1(r[3])]));
+
+  const k=rowHead('Site activity',scopeLine(P)+' · this pack has no officer-level sheet, so activity is read at site level',dl)+
+  '<div class="kpi-row">'+
+    kpi({key:'ll-sites',ico:ICO.pin,val:String(sites),label:'Active GM/PM sites in the pillar',delta:health.length+' partners',dir:'flat'})+
+    kpi({key:'ll-zero',ico:ICO.alert,val:String(zero),label:'Sites with at least one zero-activity month',delta:PCT(zero/sites)+' of sites',dir:'down',pct:1-zero/sites})+
+    kpi({key:'ll-gm',ico:ICO.users,val:F(gmQ.reduce((a,b)=>a+b,0)),label:'GM/PM reach across the listed sites',delta:gm.length+' sites detailed',dir:'flat'})+
+    kpi({key:'ll-sw',ico:ICO.check,val:F(swQ.reduce((a,b)=>a+b,0)),label:'She & We reach across its sites (A.2.3)',delta:sw.length+' sites detailed',dir:'flat'})+
+  '</div>';
+
+  const healthCard=card('Site health by partner',
+    'A zero-activity month is not the same as low delivery — it is a site that filed nothing. Way For Life has none; SAAD Foundation has one in every second site.',
+    legend([{k:'Sites',c:C[0]},{k:'With a zero month',c:'var(--bad)'}])+
+    health.map(r=>'<div class="hbar" data-drill="partner:'+r[0]+'"><div class="lb">'+r[0]+'</div>'+
+      '<div class="tr" style="display:flex;background:var(--gray-100)">'+
+      '<i style="width:'+((r[1]-r[2])/24*100)+'%;background:'+C[0]+'"></i><i style="width:'+(r[2]/24*100)+'%;background:var(--bad)"></i></div>'+
+      '<div class="vl">'+r[2]+' of '+r[1]+'  '+PCT(r[3])+'</div></div>').join(''),
+    src('sheet',P.file+' · sheet GM&PM'),dl)+
+    '<div class="note warn"><b>Every one of the 65 active sites is listed in the pack, and 17 of them have a zero-activity month.</b> SAAD Foundation carries 12 of the 17 on 23 sites; Way For Life has none on 18. That is a reporting-discipline difference between partners, not a delivery difference.</div>';
+
+  const maxG=Math.max(1,...gmQ);
+  const gmCard=card('GM/PM site detail — top sites by reach',
+    'Site, zone and state as the pack records them. Bars are the selected months only.',
+    gm.map((r,i)=>hbar(r[0]+' · '+r[2],gmQ[i],maxG,gmQ[i]?C[0]:'var(--gray-300)',F(gmQ[i]),'site:'+r[0])).join(''),
+    src('sheet',P.file+' · sheet GM&PM'),
+    reg('Livelihood GM-PM sites',['Site','Zone','State','Apr','May','Jun','Q2 total'],gm));
+
+  const maxW=Math.max(1,...swQ);
+  const swCard=card('She & We site detail — A.2.3 delivery',
+    'Unlike the GM/PM cadre, no She & We site reports a zero month.',
+    sw.slice(0,12).map((r,i)=>hbar(r[0]+' · '+r[2],swQ[i],maxW,C[2],F(swQ[i]),'site:'+r[0])).join(''),
+    src('sheet',P.file+' · sheet She&We'),
+    reg('Livelihood She and We sites',['Site','Zone','State','Apr','May','Jun','Q2 total'],sw));
+
+  const zoneAgg={};
+  sw.concat(gm).forEach((r,i)=>{ const v=mi.reduce((a,j)=>a+r[3+j],0); zoneAgg[r[1]]=(zoneAgg[r[1]]||0)+v; });
+  const zk=Object.keys(zoneAgg);
+  const zoneCard=card('Reach by zone — both sources combined',
+    'GM/PM plus She & We site rows, aggregated to the zone the pack records.',
+    donut(zk.map((z,i)=>({k:z,v:zoneAgg[z],c:C[i%5]})),{center:F(zk.reduce((a,z)=>a+zoneAgg[z],0)),sub:'lives reached'}),
+    src('sheet',P.file+' · sheets GM&PM + She&We'),
+    reg('Livelihood reach by zone',['Zone','Lives reached'],zk.map(z=>[z,zoneAgg[z]])));
+
+  return k+healthCard+'<div class="grid2">'+gmCard+swCard+'</div>'+zoneCard;
+}
+
+/* ---------- TAB 2 · narrative vs data ---------- */
+function packNarrative(P){
+  const recons=P.recon.map(r=>reconCard(r,P)).join('');
+  const heads=P.recon.map(r=>{
+    const keep=r.cols.map((c,i)=>i).filter(i=>ownerActive(r.owner[i]));
+    const full=keep.length===r.cols.length;
+    const rows=r.rows.filter(x=>monSel().indexOf(x[0])>=0);
+    const raw=rows.reduce((a,x)=>a+keep.reduce((s,i)=>s+x[1][i],0),0);
+    const p0=full?rows.reduce((a,x)=>a+x[2],0):null;
+    return {id:r.id,raw:raw,p0:p0,gap:p0?(raw-p0)/p0:null,tone:r.tone};
+  });
+  const k=rowHead('Narrative vs platform',scopeLine(P),
+    reg(P.pillar+' narrative vs platform',['Indicator','Raw total','Page 0','Gap %'],
+      heads.map(h=>[h.id,h.raw,h.p0,h.gap==null?'':PCT1(h.gap)])))+
+  '<div class="kpi-row">'+heads.map(h=>kpi({key:'pk-'+h.id,ico:h.tone==='ok'?ICO.check:ICO.alert,
+      val:h.gap==null?'n/a':(h.gap>0?'+':'')+PCT1(h.gap),label:h.id+' — raw against Page 0',
+      delta:F(h.raw)+' raw'+(h.p0?' · '+F(h.p0)+' reported':''),dir:h.tone==='bad'?'down':'flat'})).join('')+'</div>';
+
+  const cats=heads.map(h=>h.id);
+  const chart=card('Every indicator, raw against Page 0',
+    'Two measures of the same thing on one scale — never two axes. A bar pair that does not match is a counting-rule question until proven otherwise.',
+    legend([{k:'Raw partner data',c:C[0]},{k:'Reported to Page 0',c:C[1]}])+
+    groupedBars(cats,[{name:'Raw',color:C[0],data:heads.map(h=>h.raw)},
+                      {name:'Page 0',color:C[1],data:heads.map(h=>h.p0||0)}],{h:210,w:620}),
+    src('sheet',P.file+' · sheet 1'),
+    reg(P.pillar+' raw vs Page 0',['Indicator','Raw','Page 0'],heads.map(h=>[h.id,h.raw,h.p0])));
+
+  return k+chart+recons+(P.mou?mouCard(P):'')+(P.mouA?accessMouCard(P):'')+(P.donation?donationCard(P):'');
+}
+function mouCard(P){
+  const m=P.mou;
+  if(!ownerActive(m.partner)) return '';
+  const mi=monIdx();
+  const rows=m.rows.map(r=>{ const q=mi.reduce((a,j)=>a+r[2+j],0); return {n:r[0],t:r[1],q:q,p:r[1]?q/r[1]:null}; });
+  return card(m.title,m.src,
+    '<table><thead><tr><th>MoU output</th><th class="num">Annual target</th>'+monCols().map(c=>'<th class="num">'+c+'</th>').join('')+
+    '<th class="num">Q2 total</th><th>% of annual</th></tr></thead><tbody>'+
+    rows.map((r,i)=>'<tr data-drill="mouout:'+r.n.slice(0,30)+'"><td style="white-space:normal">'+r.n+'</td>'+
+      '<td class="num">'+F(r.t)+'</td>'+mi.map(j=>'<td class="num">'+F(m.rows[i][2+j])+'</td>').join('')+
+      '<td class="num"><b>'+F(r.q)+'</b></td>'+
+      '<td><span class="pill '+(r.p>=0.25?'p-ok':r.p>0?'p-warn':'p-bad')+'">'+PCT1(r.p)+'</span></td></tr>').join('')+
+    '</tbody></table>',
+    src('sheet',P.file+' · sheet 8 SNEHA MoU vs Performance'),
+    reg('SNEHA MoU vs performance',['MoU output','Annual target'].concat(monCols(),['Q2 total','% of annual']),
+      rows.map((r,i)=>[r.n,r.t].concat(mi.map(j=>m.rows[i][2+j]),[r.q,PCT1(r.p)]))))+
+    '<div class="note warn">'+m.read+'</div>';
+}
+function accessMouCard(P){
+  const m=P.mouA;
+  if(!ownerActive(m.partner)) return '';
+  const out=card(m.title,m.src+' — '+m.head,
+    '<table><thead><tr><th>Measure</th><th class="num">Annual target</th><th class="num">Expected by Jun-26</th><th class="num">Actual</th><th>Achievement</th></tr></thead><tbody>'+
+    m.outputs.map(r=>'<tr data-drill="accout:'+r[0]+'"><td>'+r[0]+'</td><td class="num">'+F(r[1])+'</td><td class="num">'+F(r[2])+'</td>'+
+      '<td class="num"><b>'+F(r[3])+'</b></td><td>'+ragPill(r[3]/r[2])+'</td></tr>').join('')+
+    '</tbody></table>'+
+    '<div style="margin-top:14px"><b style="font-size:12px">Outcome measures — current cohort (451 entrepreneurs)</b>'+
+    m.outcomes.map(r=>hbar(r[0],r[2],1,r[1]==null?'var(--gray-400)':r[2]>=r[1]?'var(--ok)':'var(--bad)',
+      PCT1(r[2])+(r[1]!=null?'  of '+PCT(r[1]):'  no target'),'accout:'+r[0],r[1]!=null?r[1]:null)).join('')+'</div>',
+    src('sheet',P.file+' · sheet AccessMoU Target vs Achievement'),
+    reg('ACCESS MoU',['Measure','Target','Actual','Type'],
+      m.outputs.map(r=>[r[0],r[2],r[3],'Output (expected by Jun-26)'])
+        .concat(m.outcomes.map(r=>[r[0],r[1]==null?'no MoU target':PCT1(r[1]),PCT1(r[2]),'Outcome']))))+
+    '<div class="note bad">'+m.read+'</div>';
+  const sitesCard=card('Priority site issues — ACCESS',
+    'Formalisation, book-keeping and social-media adoption per site, with the pack\'s own flag.',
+    '<table><thead><tr><th>Site</th><th class="num">Entrepreneurs</th><th class="num">Formalised</th><th class="num">Book-keeping</th><th class="num">Social media</th><th>Key issue</th></tr></thead><tbody>'+
+    m.sites.map(r=>'<tr data-drill="site:'+r[0]+'"><td><b>'+r[0]+'</b></td><td class="num">'+r[1]+'</td>'+
+      '<td class="num">'+PCT1(r[2])+'</td><td class="num">'+PCT1(r[3])+'</td><td class="num">'+PCT1(r[4])+'</td>'+
+      '<td style="white-space:normal">'+r[5]+'</td></tr>').join('')+'</tbody></table>',
+    src('sheet',P.file+' · sheet AccessMoU'),
+    reg('ACCESS priority sites',['Site','Entrepreneurs','Formalised','Book-keeping','Social media','Key issue'],
+      m.sites.map(r=>[r[0],r[1],PCT1(r[2]),PCT1(r[3]),PCT1(r[4]),r[5]])));
+  return out+sitesCard;
+}
+function donationCard(P){
+  const d=P.donation;
+  const tot=d.rows.reduce((a,r)=>a+r[6],0);
+  return card(d.title,'Grocery and meal distribution by site. Two sites carry 90.5% of all beneficiaries.',
+    '<table><thead><tr><th>Site</th><th>City</th><th>State</th><th class="num">Activities</th><th class="num">Grocery</th><th class="num">Meals</th><th class="num">Beneficiaries</th><th class="num">Avg / activity</th></tr></thead><tbody>'+
+    d.rows.map(r=>'<tr data-drill="site:'+r[0]+'"><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td>'+r[2]+'</td>'+
+      '<td class="num">'+r[3]+'</td><td class="num">'+r[4]+'</td><td class="num">'+r[5]+'</td>'+
+      '<td class="num"><b>'+F(r[6])+'</b></td><td class="num">'+F(r[7])+'</td></tr>').join('')+
+    '<tr class="totalrow"><td colspan="3">Total</td><td class="num">68</td><td class="num">56</td><td class="num">12</td><td class="num">'+F(tot)+'</td><td class="num">630</td></tr>'+
+    '</tbody></table>',
+    src('sheet',P.file+' · sheet Food donation'),
+    reg('Food donation by site',['Site','City','State','Activities','Grocery','Meals','Beneficiaries','Avg per activity'],d.rows))+
+    '<div class="note">'+d.read+'</div>';
+}
+
+/* ---------- TAB 3 · data quality ---------- */
+function packDQ(P){
+  const dq=P.dq.filter(r=>(S.f.partner==='All'||r[0]===S.f.partner||r[0]==='Cross-partner')&&(qMatch(r[0])||qMatch(r[1])||qMatch(r[3])));
+  const good=(P.good||[]).filter(r=>(S.f.partner==='All'||r[0]===S.f.partner)&&(qMatch(r[0])||qMatch(r[1])));
+  const flagged=(P.flagged||[]).filter(r=>(S.f.partner==='All'||r[1].indexOf(S.f.partner)>=0)&&qMatch(r.join(' ')));
+  if(!dq.length&&!good.length&&!flagged.length) return emptyBox('No finding matches','Clear the partner filter or the search box.');
+  const dlDQ=reg(P.pillar+' data quality register',['Partner','Finding','Measure','Detail','Severity'],
+    dq.map(r=>[r[0],r[1],r[2]==null?'':PCT1(r[2]),r[3],r[4]]));
+
+  const bad=dq.filter(r=>r[4]==='bad').length, warn=dq.filter(r=>r[4]==='warn').length;
+  const k=rowHead('Data quality',dq.length+' findings · '+flagged.length+' flagged sites · '+good.length+' good practices · '+scopeLine(P),dlDQ)+
+  '<div class="kpi-row">'+
+    kpi({key:'pd-1',ico:ICO.alert,val:String(bad),label:'High-severity findings in this pack',delta:warn+' medium',dir:bad?'down':'up'})+
+    kpi({key:'pd-2',ico:ICO.doc,val:String(flagged.length),label:'Sites or officer groups flagged',delta:'consolidated across indicators',dir:'flat'})+
+    (P.dup?kpi({key:'pd-3',ico:ICO.users,val:PCT1(P.dup.total[2]),label:'Rows matching the duplicate signature',delta:P.dup.total[0]+' excess of '+F(P.dup.total[1]),dir:'down',pct:P.dup.total[2]})
+          :kpi({key:'pd-3',ico:ICO.users,val:String(P.dupTests?P.dupTests.reduce((a,r)=>a+r[1],0):0),label:'Duplicate rows found across the three ACCESS files',delta:'of '+F(P.dupTests?P.dupTests.reduce((a,r)=>a+r[2],0):0)+' rows tested',dir:'down'}))+
+    kpi({key:'pd-4',ico:ICO.check,val:String(good.length),label:'Good practices worth replicating',delta:good.length?'named partner behaviours':'none recorded in this pack',dir:good.length?'up':'flat'})+
+  '</div>';
+
+  const tbl=card('Data quality register','Every finding carries its measurement and its consequence. Sorted worst first.',
+    dq.length?'<table><thead><tr><th>Partner</th><th>Finding</th><th class="num">Measure</th><th>Detail</th></tr></thead><tbody>'+
+    dq.map(r=>'<tr data-drill="dq:'+r[1]+'"><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td>'+
+      '<td class="num"><span class="pill '+(r[4]==='ok'?'p-ok':r[4]==='warn'?'p-warn':'p-bad')+'">'+(r[2]==null?'—':PCT1(r[2]))+'</span></td>'+
+      '<td style="white-space:normal">'+r[3]+'</td></tr>').join('')+'</tbody></table>'
+      :emptyBox('No finding for this partner','Nothing logged against '+S.f.partner+'.'),
+    src('sheet',P.file+' · consolidated data-quality sheets'),dlDQ);
+
+  let extra='';
+  if(P.dup){
+    const dup=partnerRows(P.dup.partners,0);
+    const one=P.dup.oneMonth.filter(r=>S.f.partner==='All'||r[2]===S.f.partner);
+    extra='<div class="grid2">'+
+      card('Duplicate rate by partner',P.dup.rule,
+        legend([{k:'Duplicate rate',c:'var(--bad)'}])+
+        dup.map(r=>hbar(r[0],r[3],0.25,r[3]>=0.15?'var(--bad)':'var(--warn)',PCT1(r[3])+'  '+r[1]+' of '+F(r[2]),'dq:'+r[0])).join(''),
+        src('sheet',P.file+' · sheet 5 Duplicate Analysis'),
+        reg('Food Security duplicates',['Partner','Excess entries','Partner raw total','% of partner total'],
+          dup.map(r=>[r[0],r[1],r[2],PCT1(r[3])])))+
+      card('Sites reporting in only 1 of 3 months',
+        one.length+' sites filed in a single month. Confirm whether they opened or closed during the quarter, or whether reporting is simply incomplete.',
+        one.length?'<table><thead><tr><th>Site</th><th>Zone</th><th>Partner</th><th>Month active</th><th class="num">Q2 total</th></tr></thead><tbody>'+
+        one.map(r=>'<tr data-drill="site:'+r[0]+'"><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td>'+
+          '<td class="num">'+F(r[4])+'</td></tr>').join('')+'</tbody></table>':emptyBox('None for this partner',''),
+        src('sheet',P.file+' · sheet 5'),
+        reg('Sites active one month only',['Site','Zone','Partner','Month active','Q2 total'],one))+
+      '</div>';
+  }
+  if(P.dupTests){
+    const dt=P.dupTests;
+    extra=card('ACCESS duplicate tests',
+      'Three files tested on a name + date + site signature. Some matches are genuine repeat visits — read the rate, not the count.',
+      '<table><thead><tr><th>File</th><th class="num">Duplicate rows</th><th class="num">File total</th><th class="num">Rate</th><th>Reading</th></tr></thead><tbody>'+
+      dt.map(r=>'<tr data-drill="dq:'+r[0]+'"><td>'+r[0]+'</td><td class="num">'+r[1]+'</td><td class="num">'+F(r[2])+'</td>'+
+        '<td class="num"><span class="pill '+(r[1]/r[2]>=0.05?'p-warn':'p-none')+'">'+PCT1(r[1]/r[2])+'</span></td>'+
+        '<td style="white-space:normal">'+r[3]+'</td></tr>').join('')+'</tbody></table>',
+      src('sheet',P.file+' · sheet Acces_awarness'),
+      reg('ACCESS duplicate tests',['File','Duplicate rows','File total','Rate','Reading'],
+        dt.map(r=>[r[0],r[1],r[2],PCT1(r[1]/r[2]),r[3]])));
+  }
+  const flagCard=flagged.length?card('Flagged sites and officer groups',
+    'Consolidated across all indicators in the pillar. Severity is the pack\'s own.',
+    '<table><thead><tr><th>Site / group</th><th>Partner</th><th>Indicator</th><th>Issue</th><th>Severity</th><th>Detail</th></tr></thead><tbody>'+
+    flagged.map(r=>'<tr data-drill="dq:'+r[0]+'"><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td>'+r[2]+'</td>'+
+      '<td style="white-space:normal">'+r[3]+'</td>'+
+      '<td><span class="pill '+(r[4]==='High'?'p-bad':r[4]==='Medium'?'p-warn':'p-none')+'">'+r[4]+'</span></td>'+
+      '<td style="white-space:normal;color:var(--gray-500)">'+r[5]+'</td></tr>').join('')+'</tbody></table>',
+    src('sheet',P.file+' · sheet Non-Performing Sites'),
+    reg(P.pillar+' flagged sites',['Site / group','Partner','Indicator','Issue','Severity','Detail'],flagged)):'';
+
+  const goodCard=P.good?card('Good practices — what is already working',
+    'The transferable lessons. Each one is a named partner behaviour another partner can copy.',
+    good.length?'<table><thead><tr><th>Partner</th><th>Highlight</th><th>Why it matters</th></tr></thead><tbody>'+
+    good.map(r=>'<tr data-drill="gp:'+r[0]+'"><td><b>'+r[0]+'</b></td><td style="white-space:normal">'+r[1]+'</td>'+
+      '<td style="white-space:normal;color:var(--gray-500)">'+r[2]+'</td></tr>').join('')+'</tbody></table>'
+      :emptyBox('None logged for this partner',''),
+    src('sheet',P.file+' · sheet Good Practices'),
+    reg(P.pillar+' good practices',['Partner','Highlight','Why it matters'],good))
+    :'<div class="note warn"><b>This pack has no Good Practices sheet.</b> The Social Security and Livelihood packs both carry one; the Food Security pack records findings only. Worth asking for the same section so the pillar review is not purely a defect list.</div>';
+
+  return k+tbl+extra+flagCard+goodCard;
 }
 function survRows(){
   return SURV.filter(r=>(S.f.partner==='All'||r[0]===S.f.partner)&&(qMatch(r[2])||qMatch(r[0])||qMatch(r[1])));
