@@ -3034,36 +3034,76 @@ function progMOU(){
    a project that shares an indicator with another carries no target of its own.
    shared = the grant pays for more than one pillar, shown whole, not split. */
 const GMPM=/^Integrated Community Engagement Programme - GM PM/;
+const GMPM_PT=['Read India','SAAD Foundation','Way For Life'];
+/* Each pillar's projects are the programmes on Amazon's finance tracker ("Project
+   wise"), named as the tracker names them (spelling corrected on screen only).
+   Field records attach through rules: indicator + form + the partner that filed
+   them, so a GM/PM partner's ICE rows land on the GM/PM programme and Pinkishe's
+   on Pinkishe's. own = indicators whose goal belongs to this project alone; an
+   indicator several projects share carries no project-level goal.
+   shared = the grant funds more than one pillar and is shown whole on each. */
 const PROJECTS={
   'Food Security':[
-    {id:'fs-ice',n:'Food security awareness — ICE (GM/PM cadre)',inds:['A.1.1'],forms:['ICE Form'],own:true,fin:GMPM,shared:true},
-    {id:'fs-mnp',n:'Morning Nutrition Programme',inds:['A.1.4'],forms:[],own:true,fin:/^Morning Nutrition/},
-    {id:'fs-sehat',n:'Sehat — maternal & child health (SNEHA)',inds:['A.1.2','A.1.3'],forms:['MCH Activity Form'],own:true,fin:/^Sehat/},
-    {id:'fs-pantry',n:'Pantry & orphan donations',inds:['A.1.5'],forms:['Food Rescue Form'],own:true,fin:null}],
+    {id:'fs-ice',n:'Integrated Community Engagement Programme (GM/PM)',s:'ICE Programme (GM/PM)',ngo:'READ India · SAAD Foundation · Way for Life',
+      fin:/^Integrated Community Engagement Programme/,shared:true,own:['A.1.1'],rules:[{inds:['A.1.1'],forms:['ICE Form'],partners:GMPM_PT}]},
+    {id:'fs-mnp',n:'Morning Nutrition Programme',s:'Morning Nutrition',ngo:'The Akshaya Patra Foundation',
+      fin:/^Morning Nutrition/,own:['A.1.4'],rules:[{inds:['A.1.4'],forms:[]}]},
+    {id:'fs-sehat',n:'Sehat Project — maternal & child health',s:'Sehat (SNEHA)',ngo:'SNEHA',
+      fin:/^Sehat/,own:['A.1.2','A.1.3'],rules:[{inds:['A.1.2','A.1.3'],forms:['MCH Activity Form']}]},
+    {id:'fs-pantry',n:'Pantry & orphan donations',s:'Pantry donations',ngo:'',
+      fin:null,own:['A.1.5'],rules:[{inds:['A.1.5'],forms:['Food Rescue Form']}]}],
   'Livelihood':[
-    {id:'ll-ice',n:'Livelihood awareness — ICE (GM/PM cadre)',inds:['A.2.1'],forms:['ICE Form'],own:true,fin:GMPM,shared:true},
-    {id:'ll-mh',n:'Menstrual hygiene',inds:['A.2.3'],forms:['ICE Form'],own:true,fin:/Menstrual/},
-    {id:'ll-sed',n:'Skill & enterprise development',inds:['A.2.2'],forms:[],own:true,fin:/Enterpr|Entrepr|Skill|Livelihoods? (Initiative|Promotion)|Upskilling/}],
+    {id:'ll-ice',n:'Integrated Community Engagement Programme (GM/PM)',s:'ICE Programme (GM/PM)',ngo:'READ India · SAAD Foundation · Way for Life',
+      fin:GMPM,shared:true,own:['A.2.1'],rules:[{inds:['A.2.1','A.2.3'],forms:['ICE Form'],partners:GMPM_PT}]},
+    {id:'ll-mhp',n:'Menstrual Hygiene Programme',s:'Menstrual Hygiene',ngo:'She & WE – Women Entrepreneurship Foundation',
+      fin:/^Menstrual Hygeine Programme/,own:[],rules:[{inds:['A.2.3'],forms:['ICE Form'],partners:['She & We']}]},
+    {id:'ll-sed',n:'Social Enterprise Development (Promoting Menstrual Hygiene)',s:'Social Enterprise (MH)',ngo:'Pinkishe',
+      fin:/^Social Enterprise Development/,own:[],rules:[{inds:['A.2.3'],forms:['ICE Form'],partners:['Pinkishe']}]},
+    {id:'ll-ee',n:'Enabling Entrepreneurship',s:'Enabling Entrepreneurship',ngo:'ACCESS Development Services',
+      fin:/^Enabling Enterpreneurship/,own:[],rules:[{inds:['A.2.2'],forms:[]}]},
+    {id:'ll-wed',n:'Women Enterprise Development (forward linkage)',s:'Women Enterprise Dev.',ngo:'GAME',
+      fin:/^Women Enterprise Development/,own:[],rules:[{inds:['A.2.2'],forms:[],partners:['GAME']}]},
+    {id:'ll-ed',n:'Entrepreneurship Development',s:'Entrepreneurship Dev.',ngo:'Buzz Women',
+      fin:/^Enterpreneurship Development/,own:[],rules:[{inds:['A.2.2'],forms:[]}]},
+    {id:'ll-ysu',n:'Youth Skill Upgradation',s:'Youth Skill Upgradation',ngo:'Lok Bharti · Sarthak · ABF',
+      fin:/^Youth Skill Upgradation/,own:[],rules:[{inds:['A.2.2'],forms:[]}]},
+    {id:'ll-mep',n:'Micro Enterprise Promotion & Forward Linkage',s:'Micro Enterprise',ngo:'Way for Life',
+      fin:/^Micro Enterprise/,own:[],rules:[{inds:['A.2.2'],forms:[]}]},
+    {id:'ll-lid',n:'Livelihoods Initiative (inclusive DA fleet)',s:'Inclusive DA fleet',ngo:'Way for Life',
+      fin:/^Livelihoods Initiative/,own:[],rules:[{inds:['A.2.2'],forms:[]}]},
+    {id:'ll-edi',n:'Enterprise Development Initiatives',s:'Enterprise Dev. Initiatives',ngo:'READ India',
+      fin:/^Enterprise Development Initiatives/,own:[],rules:[{inds:['A.2.2'],forms:[]}]},
+    {id:'ll-lpc',n:'Livelihoods Promotion Campaign',s:'Livelihoods Campaign',ngo:'READ India',
+      fin:/^Livelihoods Promotion Campaign/,own:[],rules:[{inds:['A.2.1'],forms:[]}]},
+    {id:'ll-ai',n:'AI Upskilling',s:'AI Upskilling',ngo:'NGO to be identified',
+      fin:/^AI Upskilling/,own:[],rules:[{inds:['A.2.2'],forms:[]}]}],
   'Social Security':[
-    {id:'ss-ice',n:'Financial wellbeing awareness — ICE (GM/PM cadre)',inds:['A.3.1'],forms:['ICE Form'],own:true,fin:GMPM,shared:true},
-    {id:'ss-sa',n:'Social entitlements — scheme applications',inds:['A.3.2'],forms:['Scheme Application'],own:false,fin:/^Social Entitlements Promotion/},
-    {id:'ss-seef',n:'Social entitlement camps — SEEF (GM/PM cadre)',inds:['A.3.2'],forms:['Social Entitlements Enrolment Form'],own:false,fin:GMPM,shared:true},
-    {id:'ss-js',n:'Social Entitlement Promotion in Communities (Jan Sahas)',inds:['A.3.2'],forms:[],partners:['Jan Sahas'],own:false,fin:/^Social Entitlement Promotion in Communities/}]
+    {id:'ss-ice',n:'Integrated Community Engagement Programme (GM/PM)',s:'ICE Programme (GM/PM)',ngo:'READ India · SAAD Foundation · Way for Life',
+      fin:GMPM,shared:true,own:['A.3.1'],rules:[{inds:['A.3.1'],forms:['ICE Form'],partners:GMPM_PT},
+        {inds:['A.3.2'],forms:['Social Entitlements Enrolment Form','Scheme Application'],partners:GMPM_PT}]},
+    {id:'ss-sa',n:'Social Entitlements Promotion',s:'Social Entitlements (HHH)',ngo:'Head Held High',
+      fin:/^Social Entitlements Promotion$/,own:[],rules:[{inds:['A.3.2'],forms:['Scheme Application','Social Entitlements Enrolment Form'],partners:['Head Held High']}]},
+    {id:'ss-gig',n:'Social Entitlements Promotion for Gig Economy Workers',s:'Gig Workers (HHH)',ngo:'Head Held High',
+      fin:/Gig Economy/,own:[],rules:[{inds:['A.3.2'],forms:[]}]},
+    {id:'ss-js',n:'Social Entitlement Promotion in Communities',s:'Jan Sahas',ngo:'Jan Sahas Foundation',
+      fin:/^Social Entitlement Promotion in Communities/,own:[],rules:[{inds:['A.3.2'],forms:[],partners:['Jan Sahas']}]}]
 };
+Object.keys(PROJECTS).forEach(k=>PROJECTS[k].forEach(P=>{
+  P.inds=[...new Set([].concat(...P.rules.map(r=>r.inds)))];
+  P.forms=[...new Set([].concat(...P.rules.map(r=>r.forms)))];
+}));
 function projOf(id){ return (PROJECTS[S.pillar]||[]).find(p=>p.id===id)||null; }
 function curProject(){ return S.project?projOf(S.project):null; }
 function projMatch(P,r){
-  if(P.inds.indexOf(r.ind)<0) return false;
-  if(r.goalRow) return !!P.own;
-  if(P.partners) return P.partners.indexOf(r.pt)>=0;
-  return P.forms.indexOf(r.form)>=0;
+  if(r.goalRow) return P.own.indexOf(r.ind)>=0;
+  return P.rules.some(u=>u.inds.indexOf(r.ind)>=0&&(u.forms.length?u.forms.indexOf(r.form)>=0:!!u.partners)&&(!u.partners||u.partners.indexOf(r.pt)>=0));
 }
 function projGrants(P){ return P.fin?finProj().filter(g=>P.fin.test(g.prog)):[]; }
 function projectSwitch(){
   const ps=PROJECTS[S.pillar]||[];
   return '<div class="projbar"><span class="projbar-l">Project</span><div class="segmented" data-seg="project">'+
     '<button class="'+(!S.project?'on':'')+'" data-project="">All projects</button>'+
-    ps.map(p=>'<button class="'+(p.id===S.project?'on':'')+'" data-project="'+p.id+'">'+p.n.replace(/ — .*$/,'').replace(/ \(.*\)$/,'')+'</button>').join('')+'</div></div>';
+    ps.map(p=>'<button class="'+(p.id===S.project?'on':'')+'" data-project="'+p.id+'" title="'+htmlEsc(p.n+(p.ngo?' — '+p.ngo:''))+'">'+p.s+'</button>').join('')+'</div></div>';
 }
 const PIL_OF={'Social Security':'A.3 Social Security','Food Security':'A.1 Food Security','Livelihood':'A.2 Livelihood'};
 const PIL_THEME={'Social Security':'THEME-068','Food Security':'THEME-086','Livelihood':'THEME-088'};
@@ -3087,7 +3127,7 @@ function projStats(P){
   const rec=REC(all), live=rec.filter(r=>r.t>0||r.i>0);
   const G=projGrants(P), g=totG(all), v=totV(all);
   const last=rec.reduce((m,r)=>r.date>m?r.date:m,'');
-  return {P:P,rows:all,rec:rec,v:v,g:(P.own&&activeF().partner==='All')?g:0,parts:distinct(live,r=>r.pt).size,
+  return {P:P,rows:all,rec:rec,v:v,g:(P.own.length&&activeF().partner==='All')?g:0,parts:distinct(live,r=>r.pt).size,
     ptn:[...distinct(rec,r=>r.pt)],sites:distinct(live,r=>r.site).size,dists:distinct(live,r=>r.loc).size,last:last,
     G:G,aap:sum(G,x=>x.aap||0),rel:sum(G,x=>x.rel||0),sp:sum(G,x=>x.spent),pl:sum(G,x=>x.plan)};
 }
@@ -3106,7 +3146,7 @@ function pillProjects(){
     const ngo=[...new Set(s.G.map(x=>x.pt))];
     return '<div class="pcard" data-project="'+s.P.id+'" style="border-top-color:'+C[ix%5]+'">'+
       '<div class="pcard-hd"><b>'+s.P.n+'</b>'+projStatus(s)+'</div>'+
-      '<div class="pcard-sub">'+(s.P.forms.join(' · ')||'no mGrant form')+' · '+s.P.inds.join(', ')+'</div>'+
+      '<div class="pcard-sub">'+(s.P.ngo?'<b style="color:var(--gray-700)">'+htmlEsc(s.P.ngo)+'</b> · ':'')+(s.P.forms.join(' · ')||'no mGrant form')+' · '+s.P.inds.join(', ')+'</div>'+
       '<div class="pcard-big"><b>'+F(s.v)+'</b><span>'+metricWord().toLowerCase()+(s.g?' of '+F(s.g)+' goal':'')+'</span></div>'+
       (s.g?'<div class="prog" style="margin:6px 0 2px"><i style="width:'+Math.min(100,s.v/s.g*100)+'%;background:'+ragBarColor(s.v/s.g)+'"></i></div>':'')+
       '<div class="pcard-grid">'+
@@ -3126,10 +3166,10 @@ function projectDetail(P){
   const s=projStats(P);
   const recId=reg('Project '+P.n+' records',REC_COLS,recRows(s.rows));
   const fl=s.pl?s.sp/s.pl:null;
-  const k=rowHead(P.n,(P.forms.join(' · ')||'no mGrant form')+' · '+P.inds.join(', ')+' · '+periodLabel(activeF()),recId)+
+  const k=rowHead(P.n,(P.ngo?P.ngo+' · ':'')+(P.forms.join(' · ')||'no mGrant form')+' · '+P.inds.join(', ')+' · '+periodLabel(activeF()),recId)+
   '<div class="kpi-row">'+
     kpi({key:'pj-v',ico:ICO.users,val:F(s.v),label:metricWord()+(s.g?' against a goal of '+F(s.g):''),pct:s.g?s.v/s.g:null,
-      delta:s.g?PCT(s.v/s.g)+' of goal':(P.own?'no goal at this cut':'shares its indicator — no project goal'),dir:'flat',
+      delta:s.g?PCT(s.v/s.g)+' of goal':(P.own.length?'no goal at this cut':'shares its indicator — no project goal'),dir:'flat',
       def:'Everyone this project reached in the period.',calc:'Sum over the live submissions of '+(P.forms.join(', ')||'—')+' mapped to '+P.inds.join(', ')+'.',srcTxt:SRC_SYS})+
     kpi({key:'pj-r',ico:ICO.doc,val:F(s.rec.length),label:'Submissions',delta:s.rec.filter(r=>r.appr).length+' approved · last '+(fmtDate(s.last)||'—'),dir:'flat',
       def:'Records behind the figure.',srcTxt:SRC_SYS})+
@@ -3139,7 +3179,7 @@ function projectDetail(P){
       pct:fl,delta:s.G.length?(fl==null?'no quarterly plan':PCT(fl)+' of plan'):'no grant line on the finance tracker',dir:fl!=null&&fl<0.8?'down':'flat',
       def:'Money on the grants that pay for this project.',calc:'Finance tracker "Project wise" lines matched to the project by programme name'+(P.shared?'. The grant pays for all three pillars; it is shown whole, not split.':'.'),srcTxt:FX_SRC})+
   '</div>';
-  const ind=IND.filter(i=>P.inds.indexOf(i.id)>=0).map(i=>{ const r=s.rows.filter(x=>x.ind===i.id), g=P.own?totG(r):0;
+  const ind=IND.filter(i=>P.inds.indexOf(i.id)>=0).map(i=>{ const r=s.rows.filter(x=>x.ind===i.id), g=P.own.indexOf(i.id)>=0?totG(r):0;
     return {i:i,v:totV(r),g:(activeF().partner==='All')?g:0,n:REC(r).length}; });
   const indCard=card('Indicators','The framework indicators this project reports into. Click one for its records.',
     '<table><thead><tr><th>Indicator</th><th>Form</th><th class="num">Records</th><th class="num">'+metricWord()+'</th><th class="num">Goal</th><th>% of goal</th></tr></thead><tbody>'+
